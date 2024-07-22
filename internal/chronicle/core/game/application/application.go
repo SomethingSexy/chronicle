@@ -1,18 +1,22 @@
 package application
 
-import "github.com/SomethingSexy/chronicle/internal/chronicle/core/game/application/command"
+import (
+	"github.com/SomethingSexy/chronicle/internal/chronicle/core/game/adapter"
+	"github.com/SomethingSexy/chronicle/internal/chronicle/core/game/application/command"
+	"github.com/SomethingSexy/chronicle/internal/chronicle/core/game/port"
+)
 
-type GameApplication struct {
-	Commands GameCommands
-	Queries  GameQueries
+func NewApplication() port.GameApplication {
+	commands := port.GameCommands{
+		CreateGame: command.NewCreateGameCommand(),
+	}
+
+	return port.GameApplication{
+		Commands: commands,
+		Server:   adapter.NewHttpServer(commands, port.GameQueries{}),
+	}
 }
 
-type GameCommands struct {
-	CreateGame command.CreateGameHander
-}
-
-type GameQueries struct {
-}
-
-// TODO: This should have a New function to setup the commands, repositories
-// and routes for this domain
+// func (a GameApplication) Server() port.HttpServer {
+// 	return adapter.NewHttpServer(a)
+// }

@@ -1,11 +1,19 @@
 package port
 
 import (
-	"context"
-
-	"github.com/SomethingSexy/chronicle/internal/chronicle/core/game/domain"
+	"github.com/SomethingSexy/chronicle/internal/chronicle/core/game/application/command"
+	corePort "github.com/SomethingSexy/chronicle/internal/chronicle/port"
 )
 
-type GameService interface {
-	CreateUser(ctx context.Context, game domain.Game) error
+type GameApplication struct {
+	Commands GameCommands
+	Queries  GameQueries
+	Server   corePort.HttpServer
+}
+
+type GameCommands struct {
+	CreateGame command.CreateGameHander
+}
+
+type GameQueries struct {
 }

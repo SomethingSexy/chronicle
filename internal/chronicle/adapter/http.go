@@ -1,18 +1,18 @@
-package port
+package adapter
 
 import (
 	"net/http"
 
-	"github.com/SomethingSexy/chronicle/internal/chronicle/service"
+	"github.com/SomethingSexy/chronicle/internal/chronicle/port"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 )
 
 type HttpServer struct {
-	app service.Application
+	app port.Service
 }
 
-func NewHttpServer(application service.Application) HttpServer {
+func NewHttpServer(application port.Service) HttpServer {
 	return HttpServer{
 		app: application,
 	}
@@ -24,6 +24,7 @@ func (h HttpServer) Start() {
 	r.Use(middleware.Logger)
 
 	// TODO: Given the application, this should mount all of the route handlers
+	r.Mount("/game", h.app.Routes()[0])
 
 	http.ListenAndServe(":3000", r)
 }

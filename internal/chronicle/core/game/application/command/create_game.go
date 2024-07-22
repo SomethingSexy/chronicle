@@ -5,26 +5,23 @@ import (
 	"log"
 
 	"github.com/SomethingSexy/chronicle/internal/chronicle/core/game/domain"
+	"github.com/SomethingSexy/chronicle/internal/chronicle/port"
 )
-
-// TODO: Move this to a common spot
-// TODO: Name this Command or CommandHandler
-type CommandHandler[C any] interface {
-	Handle(ctx context.Context, cmd C) error
-}
 
 type CreateGame struct {
 	Game domain.Game
 }
 
-type CreateGameHander struct{}
+type CreateGameHander port.CommandHandler[CreateGame]
 
-func NewCreateGameCommand() CommandHandler[CreateGame] {
+type createGameHandler struct{}
 
-	return CreateGameHander{}
+func NewCreateGameCommand() port.CommandHandler[CreateGame] {
+
+	return createGameHandler{}
 }
 
-func (c CreateGameHander) Handle(ctx context.Context, cmd CreateGame) error {
+func (c createGameHandler) Handle(ctx context.Context, cmd CreateGame) error {
 	log.Printf("Create game %s", cmd.Game.Name)
 	return nil
 }

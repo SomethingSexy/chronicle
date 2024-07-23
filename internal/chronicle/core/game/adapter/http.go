@@ -83,12 +83,20 @@ func ErrRender(err error) render.Renderer {
 var ErrNotFound = &ErrResponse{HTTPStatusCode: 404, StatusText: "Resource not found."}
 
 type GameRequest struct {
-	*domain.Game
+	// TODO: This forces it to be { data: { attributes: { game: { name } }}}
+	// We probably don't want this and if we don't want jsonapi logic in core
+	// model, then we have to adapt two types here
+	*domain.Game `jsonapi:"attr,game"`
+	// ID           int    `jsonapi:"primary,blogs"`
+	// Title        string `jsonapi:"attr,title"`
+	// Posts         []*Post   `jsonapi:"relation,posts"`
+	// CurrentPost   *Post     `jsonapi:"relation,current_post"`
+	// CurrentPostID int       `jsonapi:"attr,current_post_id"`
+	// CreatedAt     time.Time `jsonapi:"attr,created_at"`
+	// ViewCount     int       `jsonapi:"attr,view_count"`
 }
 
 func (a *GameRequest) Bind(r *http.Request) error {
-	// a.Article is nil if no Article fields are sent in the request. Return an
-	// error to avoid a nil pointer dereference.
 	if a.Game == nil {
 		return errors.New("missing required game fields")
 	}

@@ -1,18 +1,16 @@
 # @name create
 POST http://localhost:3000/game
-Content-Type: application/json
+Content-Type: application/vnd.api+json
 
 {
-  "name": "{{$guid}}"
+    "data": {
+        "type": "game",
+        "attributes": {
+            "game": {
+              "name": "{{$guid}}"
+            }
+        }
+    }
 }
-
-# {
-#     "data": {
-#         "type": "monitors",
-#         "attributes": {
-#             "name": "{{$guid}}"
-#         }
-#     }
-# }
 
 ###

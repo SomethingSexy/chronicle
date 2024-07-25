@@ -5,18 +5,18 @@ import (
 	"log"
 
 	"github.com/SomethingSexy/chronicle/internal/chronicle/core/game/domain"
-	"github.com/SomethingSexy/chronicle/internal/chronicle/port"
+	"github.com/SomethingSexy/chronicle/internal/common"
 )
 
 type CreateGame struct {
 	Game domain.Game
 }
 
-type CreateGameHander port.CommandHandler[CreateGame]
+type CreateGameHander common.CommandHandler[CreateGame]
 
 type createGameHandler struct{}
 
-func NewCreateGameCommand() port.CommandHandler[CreateGame] {
+func NewCreateGameCommand() common.CommandHandler[CreateGame] {
 
 	return createGameHandler{}
 }

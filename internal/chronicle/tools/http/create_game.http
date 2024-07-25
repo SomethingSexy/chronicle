@@ -6,9 +6,8 @@ Content-Type: application/vnd.api+json
     "data": {
         "type": "game",
         "attributes": {
-            "game": {
-              "name": "{{$guid}}"
-            }
+            "name": "{{$guid}}",
+            "type": "vtm"
         }
     }
 }

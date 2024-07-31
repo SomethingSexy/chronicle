@@ -5,10 +5,11 @@
     ],
     "service": "vscode",
     "runServices": [
-        "vscode"
+        "vscode",
+        "db"
     ],
     "shutdownAction": "stopCompose",
-    "postCreateCommand": "go mod download && go mod tidy",
+    // "postCreateCommand": "go mod download && go mod tidy",
     "workspaceFolder": "/workspace",
     // "overrideCommand": "",
     "customizations": {

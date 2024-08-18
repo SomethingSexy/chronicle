@@ -3,7 +3,6 @@ package service
 import (
 	"context"
 	"fmt"
-	"log"
 	"os"
 
 	"github.com/SomethingSexy/chronicle/internal/chronicle/adapter/http"
@@ -21,8 +20,6 @@ func NewService() {
 	psqlConnStr := os.Getenv("DATABASE_URL")
 	db, err := pgxpool.New(context.Background(), psqlConnStr)
 
-	log.Println(psqlConnStr)
-	log.Println(err)
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
 		os.Exit(1)

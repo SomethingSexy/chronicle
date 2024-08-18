@@ -1,7 +1,9 @@
+CREATE EXTENSION "ltree";
+
 -- Represents an overall game
 CREATE TABLE game (
   id   BIGSERIAL PRIMARY KEY,
-  game_id uuid NOT NULL,
+  game_id uuid UNIQUE NOT NULL,
   name text      NOT NULL,
   type text      NOT NULL
 );
@@ -10,13 +12,13 @@ CREATE TABLE game (
 -- This may or may not be necessary
 CREATE TABLE world (
   id BIGSERIAL PRIMARY KEY,
-  world_id uuid NOT NULL,
+  world_id uuid UNIQUE NOT NULL,
   game_id BIGSERIAL NOT NULL REFERENCES game(id)
 );
 
 CREATE TABLE location (
-  ud BIGSERIAL PRIMARY KEY,
-  location_id uuid NOT NULL,
+  id BIGSERIAL PRIMARY KEY,
+  location_id uuid UNIQUE NOT NULL,
   world_ID BIGSERIAL NOT NULL REFERENCES world(id),
   type text NOT NULL,
   name text NOT NULL,

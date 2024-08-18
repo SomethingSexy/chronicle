@@ -12,6 +12,9 @@ INSERT INTO game (
 ) VALUES (
   $1, $2, $3
 )
+ON CONFLICT (game_id) DO UPDATE SET 
+  name = EXCLUDED.name,
+  type = EXCLUDED.type
 RETURNING *;
 
 -- name: UpdateGame :exec

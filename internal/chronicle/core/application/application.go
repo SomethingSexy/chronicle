@@ -5,12 +5,13 @@ import (
 	"github.com/SomethingSexy/chronicle/internal/chronicle/port"
 )
 
-func NewApplication() port.ChronicleApplication {
+func NewApplication(persistence port.ChronicleQueries) port.ChronicleApplication {
 	commands := port.ChronicleCommands{
-		CreateGame: command.NewCreateGameCommand(),
+		CreateGame: command.NewCreateGameCommand(persistence),
 	}
 
 	return port.ChronicleApplication{
-		Commands: commands,
+		Commands:    commands,
+		Persistence: persistence,
 	}
 }

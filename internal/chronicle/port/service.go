@@ -1,16 +1,17 @@
 package port
 
 import (
-	"github.com/SomethingSexy/chronicle/internal/chronicle/core/application/command"
+	corePort "github.com/SomethingSexy/chronicle/internal/chronicle/core/port"
 )
 
 type ChronicleApplication struct {
-	Commands ChronicleCommands
-	Queries  GameQueries
+	Commands    ChronicleCommands
+	Queries     GameQueries
+	Persistence ChronicleQueries
 }
 
 type ChronicleCommands struct {
-	CreateGame command.CreateGameHander
+	CreateGame corePort.CreateGameHander
 }
 
 type GameQueries struct {

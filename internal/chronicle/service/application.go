@@ -1,15 +1,38 @@
 package service
 
 import (
+	"context"
+	"fmt"
+	"log"
+	"os"
+
 	"github.com/SomethingSexy/chronicle/internal/chronicle/adapter/http"
 	"github.com/SomethingSexy/chronicle/internal/chronicle/adapter/http/game"
+	"github.com/SomethingSexy/chronicle/internal/chronicle/adapter/persistence/postgres/query"
+	"github.com/SomethingSexy/chronicle/internal/chronicle/adapter/persistence/postgres/sqlc/repository"
 	gameApplication "github.com/SomethingSexy/chronicle/internal/chronicle/core/application"
 	"github.com/SomethingSexy/chronicle/internal/chronicle/port"
 	"github.com/go-chi/chi/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 )
 
 func NewService() {
-	game := gameApplication.NewApplication()
+	// TODO: This shold probably come from the adapter instead
+	psqlConnStr := os.Getenv("DATABASE_URL")
+	db, err := pgxpool.New(context.Background(), psqlConnStr)
+
+	log.Println(psqlConnStr)
+	log.Println(err)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
+		os.Exit(1)
+	}
+	q := repository.New(db)
+
+	// TODO: We will need to create these individally as we add and merge together
+	chronicleQueries := query.NewGameQuery(q)
+
+	game := gameApplication.NewApplication(chronicleQueries)
 
 	service := ChronicleService{
 		ChronicleApplication: game,

@@ -4,24 +4,27 @@ import (
 	"context"
 	"log"
 
-	"github.com/SomethingSexy/chronicle/internal/chronicle/core/domain"
+	gamePort "github.com/SomethingSexy/chronicle/internal/chronicle/core/port"
+	"github.com/SomethingSexy/chronicle/internal/chronicle/port"
 	"github.com/SomethingSexy/chronicle/internal/common"
 )
 
-type CreateGame struct {
-	Game domain.Game
+func NewCreateGameCommand(persistence port.ChronicleQueries) common.CommandHandler[gamePort.CreateGame] {
+
+	return createGameHandler{
+		Persistence: persistence,
+	}
 }
 
-type CreateGameHander common.CommandHandler[CreateGame]
-
-type createGameHandler struct{}
-
-func NewCreateGameCommand() common.CommandHandler[CreateGame] {
-
-	return createGameHandler{}
+type createGameHandler struct {
+	Persistence port.ChronicleQueries
 }
 
-func (c createGameHandler) Handle(ctx context.Context, cmd CreateGame) error {
+func (c createGameHandler) Handle(ctx context.Context, cmd gamePort.CreateGame) error {
 	log.Printf("Create game %s", cmd.Game.Name)
+	_, err := c.Persistence.CreateGame(ctx, cmd.Game)
+	if err != nil {
+		return err
+	}
 	return nil
 }

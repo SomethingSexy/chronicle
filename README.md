@@ -24,7 +24,7 @@ Inspect schema
 
 `atlas schema inspect -u "postgres://postgres:postgres@db:5432/chronicle?search_path=public&sslmode=disable"`
 
-```
+```shell
 atlas schema apply \
   -u "postgres://postgres:postgres@db:5432/chronicle?sslmode=disable" \
   --to file://schema.sql \
@@ -33,14 +33,35 @@ atlas schema apply \
 
 Initialize
 
-```
+```shell
 atlas migrate diff initial \
   --to file://schema.sql \
   --dev-url "postgres://postgres:postgres@db:5432/chronicle?sslmode=disable" \
   --format '{{ sql . "  " }}'
 ```
 
+Update schema
+
+```shell
 atlas migrate diff add_commits \
   --to file://schema.sql \
   --dev-url "postgres://postgres:postgres@db:5432/chronicle?sslmode=disable" \
   --format '{{ sql . "  " }}'
+```
+
+Run all migrations on a new database
+
+```shell
+atlas migrate apply \
+  --url "postgres://postgres:postgres@db:5432/chronicle?sslmode=disable"  \
+  --dir "file://migrations" 
+```
+
+Migrate from a baseline, the baseline will be ignored
+
+```shell
+atlas migrate apply \
+  --url "postgres://postgres:postgres@db:5432/chronicle?sslmode=disable"  \
+  --dir "file://migrations" \
+  --baseline "20240731025606"
+```

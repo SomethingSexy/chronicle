@@ -3,7 +3,7 @@ package game
 import (
 	"net/http"
 
-	"github.com/SomethingSexy/chronicle/internal/chronicle/core/application/command"
+	corePort "github.com/SomethingSexy/chronicle/internal/chronicle/core/port"
 	"github.com/SomethingSexy/chronicle/internal/chronicle/port"
 	"github.com/SomethingSexy/chronicle/internal/common"
 	"github.com/go-chi/chi/v5"
@@ -35,7 +35,7 @@ func (h GameHttpServer) CreateGame(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := h.commands.CreateGame.Handle(r.Context(), command.CreateGame{
+	if err := h.commands.CreateGame.Handle(r.Context(), corePort.CreateGame{
 		Game: data.ToDomain(),
 	}); err != nil {
 		render.Render(w, r, common.ErrInvalidRequest(err))

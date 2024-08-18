@@ -1,10 +1,10 @@
-package http
+package game
 
 import (
 	"errors"
 	"net/http"
 
-	"github.com/SomethingSexy/chronicle/internal/chronicle/core/game/domain"
+	"github.com/SomethingSexy/chronicle/internal/chronicle/core/domain"
 )
 
 type GameRequest struct {

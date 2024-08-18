@@ -7,26 +7,34 @@ package repository
 
 import (
 	"context"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createGame = `-- name: CreateGame :one
 INSERT INTO game (
-  name, type
+  game_id, name, type
 ) VALUES (
-  $1, $2
+  $1, $2, $3
 )
-RETURNING id, name, type
+RETURNING id, game_id, name, type
 `
 
 type CreateGameParams struct {
-	Name string
-	Type string
+	GameID pgtype.UUID
+	Name   string
+	Type   string
 }
 
 func (q *Queries) CreateGame(ctx context.Context, arg CreateGameParams) (Game, error) {
-	row := q.db.QueryRow(ctx, createGame, arg.Name, arg.Type)
+	row := q.db.QueryRow(ctx, createGame, arg.GameID, arg.Name, arg.Type)
 	var i Game
-	err := row.Scan(&i.ID, &i.Name, &i.Type)
+	err := row.Scan(
+		&i.ID,
+		&i.GameID,
+		&i.Name,
+		&i.Type,
+	)
 	return i, err
 }
 
@@ -41,19 +49,24 @@ func (q *Queries) DeleteGame(ctx context.Context, id int64) error {
 }
 
 const getGame = `-- name: GetGame :one
-SELECT id, name, type FROM game
+SELECT id, game_id, name, type FROM game
 WHERE id = $1 LIMIT 1
 `
 
 func (q *Queries) GetGame(ctx context.Context, id int64) (Game, error) {
 	row := q.db.QueryRow(ctx, getGame, id)
 	var i Game
-	err := row.Scan(&i.ID, &i.Name, &i.Type)
+	err := row.Scan(
+		&i.ID,
+		&i.GameID,
+		&i.Name,
+		&i.Type,
+	)
 	return i, err
 }
 
 const listGames = `-- name: ListGames :many
-SELECT id, name, type FROM game
+SELECT id, game_id, name, type FROM game
 ORDER BY name
 `
 
@@ -66,7 +79,12 @@ func (q *Queries) ListGames(ctx context.Context) ([]Game, error) {
 	var items []Game
 	for rows.Next() {
 		var i Game
-		if err := rows.Scan(&i.ID, &i.Name, &i.Type); err != nil {
+		if err := rows.Scan(
+			&i.ID,
+			&i.GameID,
+			&i.Name,
+			&i.Type,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

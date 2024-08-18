@@ -1,9 +1,9 @@
-package adapter
+package http
 
 import (
 	"net/http"
 
-	"github.com/SomethingSexy/chronicle/internal/chronicle/port"
+	"github.com/SomethingSexy/chronicle/internal/common"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/render"
@@ -13,10 +13,10 @@ import (
 var ContentTypeJsonApi = "application/vnd.api+json"
 
 type HttpServer struct {
-	app port.Service
+	app common.Service
 }
 
-func NewHttpServer(application port.Service) HttpServer {
+func NewHttpServer(application common.Service) HttpServer {
 	return HttpServer{
 		app: application,
 	}

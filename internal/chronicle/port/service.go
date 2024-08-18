@@ -1,8 +1,17 @@
 package port
 
-import "github.com/go-chi/chi/v5"
+import (
+	"github.com/SomethingSexy/chronicle/internal/chronicle/core/application/command"
+)
 
-// This should represent an overall service application
-type Service interface {
-	Routes() []chi.Router
+type ChronicleApplication struct {
+	Commands ChronicleCommands
+	Queries  GameQueries
+}
+
+type ChronicleCommands struct {
+	CreateGame command.CreateGameHander
+}
+
+type GameQueries struct {
 }

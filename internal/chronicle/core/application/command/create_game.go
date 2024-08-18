@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	"github.com/SomethingSexy/chronicle/internal/chronicle/core/game/domain"
+	"github.com/SomethingSexy/chronicle/internal/chronicle/core/domain"
 	"github.com/SomethingSexy/chronicle/internal/common"
 )
 

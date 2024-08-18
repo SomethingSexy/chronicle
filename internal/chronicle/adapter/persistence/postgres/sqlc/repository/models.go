@@ -4,8 +4,27 @@
 
 package repository
 
+import (
+	"github.com/jackc/pgx/v5/pgtype"
+)
+
 type Game struct {
-	ID   int64
-	Name string
-	Type string
+	ID     int64
+	GameID pgtype.UUID
+	Name   string
+	Type   string
+}
+
+type Location struct {
+	Ud         int64
+	LocationID pgtype.UUID
+	Type       string
+	Name       string
+	Path       pgtype.Text
+}
+
+type World struct {
+	ID      int64
+	WorldID pgtype.UUID
+	GameID  int64
 }

@@ -1,9 +1,10 @@
 package service
 
 import (
-	"github.com/SomethingSexy/chronicle/internal/chronicle/adapter"
-	gameApplication "github.com/SomethingSexy/chronicle/internal/chronicle/core/game/application"
-	gamePort "github.com/SomethingSexy/chronicle/internal/chronicle/core/game/port"
+	"github.com/SomethingSexy/chronicle/internal/chronicle/adapter/http"
+	"github.com/SomethingSexy/chronicle/internal/chronicle/adapter/http/game"
+	gameApplication "github.com/SomethingSexy/chronicle/internal/chronicle/core/application"
+	"github.com/SomethingSexy/chronicle/internal/chronicle/port"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -11,21 +12,22 @@ func NewService() {
 	game := gameApplication.NewApplication()
 
 	service := ChronicleService{
-		GameApplication: game,
+		ChronicleApplication: game,
 	}
 
-	httpServer := adapter.NewHttpServer(service)
+	httpServer := http.NewHttpServer(service)
 
 	httpServer.Start()
 }
 
 type ChronicleService struct {
-	GameApplication gamePort.GameApplication
+	ChronicleApplication port.ChronicleApplication
 }
 
 func (c ChronicleService) Routes() []chi.Router {
-	gameHttpServer := c.GameApplication.Server.Routes()
-	return []chi.Router{gameHttpServer}
+	gameHttpServer := game.NewGameHttpServer(c.ChronicleApplication.Commands, port.GameQueries{})
+	routes := gameHttpServer.Routes()
+	return []chi.Router{routes}
 }
 
 // type Application struct {

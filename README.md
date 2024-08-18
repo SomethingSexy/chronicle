@@ -8,6 +8,10 @@ See <https://github.com/qdm12/godevcontainer/tree/master>
 
 ## DB
 
+### Go Definitions
+
+`sqlc generate`
+
 ### Migration Scripts
 
 <https://atlasgo.io/versioned/intro>
@@ -35,3 +39,8 @@ atlas migrate diff initial \
   --dev-url "postgres://postgres:postgres@db:5432/chronicle?sslmode=disable" \
   --format '{{ sql . "  " }}'
 ```
+
+atlas migrate diff add_commits \
+  --to file://schema.sql \
+  --dev-url "postgres://postgres:postgres@db:5432/chronicle?sslmode=disable" \
+  --format '{{ sql . "  " }}'

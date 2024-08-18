@@ -8,9 +8,9 @@ ORDER BY name;
 
 -- name: CreateGame :one
 INSERT INTO game (
-  name, type
+  game_id, name, type
 ) VALUES (
-  $1, $2
+  $1, $2, $3
 )
 RETURNING *;
 

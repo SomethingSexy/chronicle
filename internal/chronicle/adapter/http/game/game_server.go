@@ -1,16 +1,16 @@
-package http
+package game
 
 import (
 	"net/http"
 
-	"github.com/SomethingSexy/chronicle/internal/chronicle/core/game/application/command"
-	"github.com/SomethingSexy/chronicle/internal/chronicle/core/game/port"
+	"github.com/SomethingSexy/chronicle/internal/chronicle/core/application/command"
+	"github.com/SomethingSexy/chronicle/internal/chronicle/port"
 	"github.com/SomethingSexy/chronicle/internal/common"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 )
 
-func NewHttpServer(commands port.GameCommands, queries port.GameQueries) GameHttpServer {
+func NewGameHttpServer(commands port.ChronicleCommands, queries port.GameQueries) GameHttpServer {
 	return GameHttpServer{
 		commands: commands,
 		queries:  queries,
@@ -18,7 +18,7 @@ func NewHttpServer(commands port.GameCommands, queries port.GameQueries) GameHtt
 }
 
 type GameHttpServer struct {
-	commands port.GameCommands
+	commands port.ChronicleCommands
 	queries  port.GameQueries
 }
 

@@ -5,6 +5,7 @@ import (
 
 	"github.com/SomethingSexy/chronicle/internal/chronicle/adapter/persistence/postgres/sqlc/repository"
 	"github.com/SomethingSexy/chronicle/internal/chronicle/core/domain"
+	"github.com/google/uuid"
 )
 
 func NewGameQuery(queries *repository.Queries) GameQuery {
@@ -59,4 +60,19 @@ func (g GameQuery) ListGames(ctx context.Context) ([]domain.Game, error) {
 	}
 
 	return games, nil
+}
+
+func (g GameQuery) GetGame(ctx context.Context, id uuid.UUID) (domain.Game, error) {
+	response, err := g.Queries.GetGameFromUuid(ctx, id)
+	if err != nil {
+		return domain.Game{}, err
+	}
+
+	game := domain.Game{
+		Name:   response.Name,
+		Type:   response.Type,
+		GameId: response.GameID,
+	}
+
+	return game, nil
 }

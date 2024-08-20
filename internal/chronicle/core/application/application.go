@@ -13,6 +13,7 @@ func NewApplication(persistence port.ChronicleQueries) port.ChronicleApplication
 
 	queries := port.GameQueries{
 		ListGames: query.NewListGamesHandler(persistence),
+		GetGame:   query.NewGetGameHandler(persistence),
 	}
 
 	return port.ChronicleApplication{

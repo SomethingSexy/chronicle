@@ -9,6 +9,7 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
 	"github.com/google/jsonapi"
+	"github.com/google/uuid"
 )
 
 func NewGameHttpServer(commands port.ChronicleCommands, queries port.GameQueries) GameHttpServer {
@@ -27,6 +28,7 @@ func (h GameHttpServer) Routes() chi.Router {
 	r := chi.NewRouter()
 	r.Post("/", h.CreateGame)
 	r.Get("/", h.ListGames)
+	r.Get("/{gameId}", h.GetGame)
 	return r
 }
 
@@ -45,7 +47,6 @@ func (h GameHttpServer) CreateGame(w http.ResponseWriter, r *http.Request) {
 	}
 
 	render.Status(r, http.StatusCreated)
-	// render.Render(w, r, NewGameResponse(article))
 }
 
 func (h GameHttpServer) ListGames(w http.ResponseWriter, r *http.Request) {
@@ -55,11 +56,7 @@ func (h GameHttpServer) ListGames(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.WriteHeader(http.StatusOK)
-	w.Header().Set("Content-Type", jsonapi.MediaType)
-
 	responses := make([]*GameRequest, len(games))
-
 	for i, game := range games {
 		responses[i] = &GameRequest{
 			ID:     game.GameId.String(),
@@ -69,10 +66,37 @@ func (h GameHttpServer) ListGames(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", jsonapi.MediaType)
 	if err := jsonapi.MarshalPayload(w, responses); err != nil {
 		render.Render(w, r, common.ErrInvalidRequest(err))
 		return
 	}
-	// render.Status(r, http.StatusCreated)
-	// render.Render(w, r, NewGameResponse(article))
+}
+
+func (h GameHttpServer) GetGame(w http.ResponseWriter, r *http.Request) {
+	gameId := chi.URLParam(r, "gameId")
+
+	game, err := h.queries.GetGame.Handle(r.Context(), corePort.GetGameQuery{
+		// TODO: BAD check for error
+		GameId: uuid.MustParse(gameId),
+	})
+	if err != nil {
+		render.Render(w, r, common.ErrInvalidRequest(err))
+		return
+	}
+
+	response := &GameRequest{
+		ID:     game.GameId.String(),
+		GameId: game.GameId.String(),
+		Name:   game.Name,
+		Type:   game.Type,
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", jsonapi.MediaType)
+	if err := jsonapi.MarshalPayload(w, response); err != nil {
+		render.Render(w, r, common.ErrInvalidRequest(err))
+		return
+	}
 }

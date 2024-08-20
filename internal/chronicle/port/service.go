@@ -16,4 +16,5 @@ type ChronicleCommands struct {
 
 type GameQueries struct {
 	ListGames corePort.ListGamesHandler
+	GetGame   corePort.GetGameHandler
 }

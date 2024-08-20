@@ -5,19 +5,20 @@
 package repository
 
 import (
+	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
 type Game struct {
 	ID     int64
-	GameID pgtype.UUID
+	GameID uuid.UUID
 	Name   string
 	Type   string
 }
 
 type Location struct {
-	Ud         int64
-	LocationID pgtype.UUID
+	ID         int64
+	LocationID uuid.UUID
 	WorldID    int64
 	Type       string
 	Name       string
@@ -26,6 +27,7 @@ type Location struct {
 
 type World struct {
 	ID      int64
-	WorldID pgtype.UUID
+	WorldID uuid.UUID
 	GameID  int64
+	Name    string
 }

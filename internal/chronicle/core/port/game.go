@@ -10,3 +10,7 @@ type CreateGame struct {
 }
 
 type CreateGameHander common.CommandHandler[CreateGame]
+
+type AllGamesQuery struct {
+}
+type ListGamesHandler common.QueryHandler[AllGamesQuery, []domain.Game]

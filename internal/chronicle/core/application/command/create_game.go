@@ -10,7 +10,6 @@ import (
 )
 
 func NewCreateGameCommand(persistence port.ChronicleQueries) common.CommandHandler[gamePort.CreateGame] {
-
 	return createGameHandler{
 		Persistence: persistence,
 	}
@@ -21,7 +20,7 @@ type createGameHandler struct {
 }
 
 func (c createGameHandler) Handle(ctx context.Context, cmd gamePort.CreateGame) error {
-	log.Printf("Create game %s", cmd.Game.Name)
+	log.Printf("Creating game %s with id %s", cmd.Game.Name, cmd.Game.GameId)
 	_, err := c.Persistence.CreateGame(ctx, cmd.Game)
 	if err != nil {
 		return err

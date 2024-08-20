@@ -1,5 +1,5 @@
 # @name create
-POST http://localhost:3000/game
+POST http://localhost:3000/games
 Content-Type: application/vnd.api+json
 
 {
@@ -12,5 +12,11 @@ Content-Type: application/vnd.api+json
         }
     }
 }
+
+###
+
+# @name list
+GET http://localhost:3000/games
+Content-Type: application/vnd.api+json
 
 ###

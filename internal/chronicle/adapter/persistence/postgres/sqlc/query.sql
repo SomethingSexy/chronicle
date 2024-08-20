@@ -2,6 +2,10 @@
 SELECT * FROM game
 WHERE id = $1 LIMIT 1;
 
+-- name: GetGameFromUuid :one
+SELECT * FROM game
+WHERE game_id = $1 LIMIT 1;
+
 -- name: ListGames :many
 SELECT * FROM game
 ORDER BY name;
@@ -12,7 +16,7 @@ INSERT INTO game (
 ) VALUES (
   $1, $2, $3
 )
-ON CONFLICT (game_id) DO UPDATE SET 
+ON CONFLICT (game_id) DO UPDATE SET
   name = EXCLUDED.name,
   type = EXCLUDED.type
 RETURNING *;
@@ -21,8 +25,39 @@ RETURNING *;
 UPDATE game
   set name = $2,
   type = $3
-WHERE id = $1;
+WHERE game_id = $1;
 
 -- name: DeleteGame :exec
 DELETE FROM game
-WHERE id = $1;
+WHERE game_id = $1;
+
+-- name: GetWorld :one
+SELECT * FROM world
+WHERE id = $1 LIMIT 1;
+
+-- name: GetWorldFromUuid :one
+SELECT * FROM world
+WHERE world_id = $1 LIMIT 1;
+
+-- name: ListWorlds :many
+SELECT * FROM world
+ORDER BY name;
+
+-- name: CreateWorld :one
+INSERT INTO world (
+  world_id, game_id, name
+) VALUES (
+  $1, $2, $3
+)
+ON CONFLICT (world_id) DO UPDATE SET
+  name = EXCLUDED.name
+RETURNING *;
+
+-- name: UpdateWorld :exec
+UPDATE world
+  set name = $2
+WHERE world_id = $1;
+
+-- name: DeleteWorld :exec
+DELETE FROM world
+WHERE world_id = $1;

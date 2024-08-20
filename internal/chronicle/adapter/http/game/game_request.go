@@ -9,6 +9,7 @@ import (
 )
 
 type GameRequest struct {
+	ID     string `jsonapi:"primary,games"`
 	GameId string `jsonapi:"attr,gameId"`
 	Name   string `jsonapi:"attr,name"`
 	Type   string `jsonapi:"attr,type"`

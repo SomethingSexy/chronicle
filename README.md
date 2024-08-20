@@ -65,3 +65,7 @@ atlas migrate apply \
   --dir "file://migrations" \
   --baseline "20240731025606"
 ```
+
+Using the free version of Atlas, we need to manually add extensions.
+
+Right now we are adding them to the root migration (probably should make this a separate first migration).

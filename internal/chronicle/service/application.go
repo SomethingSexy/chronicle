@@ -45,7 +45,7 @@ type ChronicleService struct {
 }
 
 func (c ChronicleService) Routes() []chi.Router {
-	gameHttpServer := game.NewGameHttpServer(c.ChronicleApplication.Commands, port.GameQueries{})
+	gameHttpServer := game.NewGameHttpServer(c.ChronicleApplication.Commands, c.ChronicleApplication.Queries)
 	routes := gameHttpServer.Routes()
 	return []chi.Router{routes}
 }

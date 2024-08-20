@@ -8,6 +8,7 @@ import (
 	"github.com/SomethingSexy/chronicle/internal/common"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/render"
+	"github.com/google/jsonapi"
 )
 
 func NewGameHttpServer(commands port.ChronicleCommands, queries port.GameQueries) GameHttpServer {
@@ -25,6 +26,7 @@ type GameHttpServer struct {
 func (h GameHttpServer) Routes() chi.Router {
 	r := chi.NewRouter()
 	r.Post("/", h.CreateGame)
+	r.Get("/", h.ListGames)
 	return r
 }
 
@@ -43,5 +45,34 @@ func (h GameHttpServer) CreateGame(w http.ResponseWriter, r *http.Request) {
 	}
 
 	render.Status(r, http.StatusCreated)
+	// render.Render(w, r, NewGameResponse(article))
+}
+
+func (h GameHttpServer) ListGames(w http.ResponseWriter, r *http.Request) {
+	games, err := h.queries.ListGames.Handle(r.Context(), corePort.AllGamesQuery{})
+	if err != nil {
+		render.Render(w, r, common.ErrInvalidRequest(err))
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", jsonapi.MediaType)
+
+	responses := make([]*GameRequest, len(games))
+
+	for i, game := range games {
+		responses[i] = &GameRequest{
+			ID:     game.GameId.String(),
+			GameId: game.GameId.String(),
+			Name:   game.Name,
+			Type:   game.Type,
+		}
+	}
+
+	if err := jsonapi.MarshalPayload(w, responses); err != nil {
+		render.Render(w, r, common.ErrInvalidRequest(err))
+		return
+	}
+	// render.Status(r, http.StatusCreated)
 	// render.Render(w, r, NewGameResponse(article))
 }

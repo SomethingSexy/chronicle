@@ -8,7 +8,7 @@ package repository
 import (
 	"context"
 
-	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/google/uuid"
 )
 
 const createGame = `-- name: CreateGame :one
@@ -17,14 +17,14 @@ INSERT INTO game (
 ) VALUES (
   $1, $2, $3
 )
-ON CONFLICT (game_id) DO UPDATE SET 
+ON CONFLICT (game_id) DO UPDATE SET
   name = EXCLUDED.name,
   type = EXCLUDED.type
 RETURNING id, game_id, name, type
 `
 
 type CreateGameParams struct {
-	GameID pgtype.UUID
+	GameID uuid.UUID
 	Name   string
 	Type   string
 }
@@ -41,13 +41,52 @@ func (q *Queries) CreateGame(ctx context.Context, arg CreateGameParams) (Game, e
 	return i, err
 }
 
-const deleteGame = `-- name: DeleteGame :exec
-DELETE FROM game
-WHERE id = $1
+const createWorld = `-- name: CreateWorld :one
+INSERT INTO world (
+  world_id, game_id, name
+) VALUES (
+  $1, $2, $3
+)
+ON CONFLICT (world_id) DO UPDATE SET
+  name = EXCLUDED.name
+RETURNING id, world_id, game_id, name
 `
 
-func (q *Queries) DeleteGame(ctx context.Context, id int64) error {
-	_, err := q.db.Exec(ctx, deleteGame, id)
+type CreateWorldParams struct {
+	WorldID uuid.UUID
+	GameID  int64
+	Name    string
+}
+
+func (q *Queries) CreateWorld(ctx context.Context, arg CreateWorldParams) (World, error) {
+	row := q.db.QueryRow(ctx, createWorld, arg.WorldID, arg.GameID, arg.Name)
+	var i World
+	err := row.Scan(
+		&i.ID,
+		&i.WorldID,
+		&i.GameID,
+		&i.Name,
+	)
+	return i, err
+}
+
+const deleteGame = `-- name: DeleteGame :exec
+DELETE FROM game
+WHERE game_id = $1
+`
+
+func (q *Queries) DeleteGame(ctx context.Context, gameID uuid.UUID) error {
+	_, err := q.db.Exec(ctx, deleteGame, gameID)
+	return err
+}
+
+const deleteWorld = `-- name: DeleteWorld :exec
+DELETE FROM world
+WHERE world_id = $1
+`
+
+func (q *Queries) DeleteWorld(ctx context.Context, worldID uuid.UUID) error {
+	_, err := q.db.Exec(ctx, deleteWorld, worldID)
 	return err
 }
 
@@ -64,6 +103,57 @@ func (q *Queries) GetGame(ctx context.Context, id int64) (Game, error) {
 		&i.GameID,
 		&i.Name,
 		&i.Type,
+	)
+	return i, err
+}
+
+const getGameFromUuid = `-- name: GetGameFromUuid :one
+SELECT id, game_id, name, type FROM game
+WHERE game_id = $1 LIMIT 1
+`
+
+func (q *Queries) GetGameFromUuid(ctx context.Context, gameID uuid.UUID) (Game, error) {
+	row := q.db.QueryRow(ctx, getGameFromUuid, gameID)
+	var i Game
+	err := row.Scan(
+		&i.ID,
+		&i.GameID,
+		&i.Name,
+		&i.Type,
+	)
+	return i, err
+}
+
+const getWorld = `-- name: GetWorld :one
+SELECT id, world_id, game_id, name FROM world
+WHERE id = $1 LIMIT 1
+`
+
+func (q *Queries) GetWorld(ctx context.Context, id int64) (World, error) {
+	row := q.db.QueryRow(ctx, getWorld, id)
+	var i World
+	err := row.Scan(
+		&i.ID,
+		&i.WorldID,
+		&i.GameID,
+		&i.Name,
+	)
+	return i, err
+}
+
+const getWorldFromUuid = `-- name: GetWorldFromUuid :one
+SELECT id, world_id, game_id, name FROM world
+WHERE world_id = $1 LIMIT 1
+`
+
+func (q *Queries) GetWorldFromUuid(ctx context.Context, worldID uuid.UUID) (World, error) {
+	row := q.db.QueryRow(ctx, getWorldFromUuid, worldID)
+	var i World
+	err := row.Scan(
+		&i.ID,
+		&i.WorldID,
+		&i.GameID,
+		&i.Name,
 	)
 	return i, err
 }
@@ -98,20 +188,66 @@ func (q *Queries) ListGames(ctx context.Context) ([]Game, error) {
 	return items, nil
 }
 
+const listWorlds = `-- name: ListWorlds :many
+SELECT id, world_id, game_id, name FROM world
+ORDER BY name
+`
+
+func (q *Queries) ListWorlds(ctx context.Context) ([]World, error) {
+	rows, err := q.db.Query(ctx, listWorlds)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []World
+	for rows.Next() {
+		var i World
+		if err := rows.Scan(
+			&i.ID,
+			&i.WorldID,
+			&i.GameID,
+			&i.Name,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateGame = `-- name: UpdateGame :exec
 UPDATE game
   set name = $2,
   type = $3
-WHERE id = $1
+WHERE game_id = $1
 `
 
 type UpdateGameParams struct {
-	ID   int64
-	Name string
-	Type string
+	GameID uuid.UUID
+	Name   string
+	Type   string
 }
 
 func (q *Queries) UpdateGame(ctx context.Context, arg UpdateGameParams) error {
-	_, err := q.db.Exec(ctx, updateGame, arg.ID, arg.Name, arg.Type)
+	_, err := q.db.Exec(ctx, updateGame, arg.GameID, arg.Name, arg.Type)
+	return err
+}
+
+const updateWorld = `-- name: UpdateWorld :exec
+UPDATE world
+  set name = $2
+WHERE world_id = $1
+`
+
+type UpdateWorldParams struct {
+	WorldID uuid.UUID
+	Name    string
+}
+
+func (q *Queries) UpdateWorld(ctx context.Context, arg UpdateWorldParams) error {
+	_, err := q.db.Exec(ctx, updateWorld, arg.WorldID, arg.Name)
 	return err
 }

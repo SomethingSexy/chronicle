@@ -30,7 +30,7 @@ func (h HttpServer) Start() {
 	render.Decode = DefaultDecoder
 
 	// TODO: Given the application, this should mount all of the route handlers
-	r.Mount("/game", h.app.Routes()[0])
+	r.Mount("/games", h.app.Routes()[0])
 
 	http.ListenAndServe(":3000", r)
 }

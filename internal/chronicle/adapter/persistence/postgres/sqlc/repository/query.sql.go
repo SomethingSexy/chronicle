@@ -109,7 +109,7 @@ func (q *Queries) GetGame(ctx context.Context, id int64) (Game, error) {
 
 const getGameFromUuid = `-- name: GetGameFromUuid :one
 SELECT id, game_id, name, type FROM game
-WHERE game_id = $1 LIMIT 1
+WHERE game.game_id = $1 LIMIT 1
 `
 
 func (q *Queries) GetGameFromUuid(ctx context.Context, gameID uuid.UUID) (Game, error) {
@@ -122,6 +122,52 @@ func (q *Queries) GetGameFromUuid(ctx context.Context, gameID uuid.UUID) (Game, 
 		&i.Type,
 	)
 	return i, err
+}
+
+const getGameWorlds = `-- name: GetGameWorlds :many
+SELECT world.id, world_id, world.game_id, world.name, game.id, game.game_id, game.name, type FROM world
+JOIN game ON world.game_id = game.id
+WHERE game.game_id = $1
+`
+
+type GetGameWorldsRow struct {
+	ID       int64
+	WorldID  uuid.UUID
+	GameID   int64
+	Name     string
+	ID_2     int64
+	GameID_2 uuid.UUID
+	Name_2   string
+	Type     string
+}
+
+func (q *Queries) GetGameWorlds(ctx context.Context, gameID uuid.UUID) ([]GetGameWorldsRow, error) {
+	rows, err := q.db.Query(ctx, getGameWorlds, gameID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetGameWorldsRow
+	for rows.Next() {
+		var i GetGameWorldsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.WorldID,
+			&i.GameID,
+			&i.Name,
+			&i.ID_2,
+			&i.GameID_2,
+			&i.Name_2,
+			&i.Type,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getWorld = `-- name: GetWorld :one

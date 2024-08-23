@@ -11,7 +11,8 @@ type ChronicleApplication struct {
 }
 
 type ChronicleCommands struct {
-	CreateGame corePort.CreateGameHander
+	CreateGame  corePort.CreateGameHander
+	CreateWorld corePort.CreateWorldHander
 }
 
 type GameQueries struct {

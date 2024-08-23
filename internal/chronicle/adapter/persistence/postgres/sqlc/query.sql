@@ -4,7 +4,7 @@ WHERE id = $1 LIMIT 1;
 
 -- name: GetGameFromUuid :one
 SELECT * FROM game
-WHERE game_id = $1 LIMIT 1;
+WHERE game.game_id = $1 LIMIT 1;
 
 -- name: ListGames :many
 SELECT * FROM game
@@ -38,6 +38,11 @@ WHERE id = $1 LIMIT 1;
 -- name: GetWorldFromUuid :one
 SELECT * FROM world
 WHERE world_id = $1 LIMIT 1;
+
+-- name: GetGameWorlds :many
+SELECT * FROM world
+JOIN game ON world.game_id = game.id
+WHERE game.game_id = $1;
 
 -- name: ListWorlds :many
 SELECT * FROM world

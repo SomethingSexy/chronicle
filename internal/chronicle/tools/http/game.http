@@ -1,0 +1,44 @@
+
+@gameId = 0be09611-1e65-44f8-a103-883cfaccf1aa
+
+# @name create_game
+
+POST http://localhost:3000/games
+Content-Type: application/vnd.api+json
+
+{
+    "data": {
+        "type": "game",
+        "attributes": {
+            "gameId": "{{gameId}}",
+            "name": "Milwaukee By Night",
+            "type": "vtm"
+        }
+    }
+}
+
+###
+
+
+# @name create_world
+POST http://localhost:3000/games/{{gameId}}/worlds
+Content-Type: application/vnd.api+json
+
+{
+    "data": {
+        "type": "world",
+        "attributes": {
+            "worldId": "{{$guid}}",
+            "gameId": "{{gameId}}",
+            "name": "My World"
+        }
+    }
+}
+
+###
+
+# @name list
+GET http://localhost:3000/games
+Content-Type: application/vnd.api+json
+
+###

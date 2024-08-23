@@ -8,11 +8,11 @@ import (
 	"github.com/google/uuid"
 )
 
+// TODO: Split this when it gets too big
 func NewGameQuery(queries *repository.Queries) GameQuery {
 	return GameQuery{
 		Queries: queries,
 	}
-
 }
 
 type GameQuery struct {
@@ -75,4 +75,45 @@ func (g GameQuery) GetGame(ctx context.Context, id uuid.UUID) (domain.Game, erro
 	}
 
 	return game, nil
+}
+
+func (g GameQuery) GetGameWorlds(ctx context.Context, gameId uuid.UUID) ([]domain.World, error) {
+	response, err := g.Queries.GetGameWorlds(ctx, gameId)
+	if err != nil {
+		return nil, err
+	}
+
+	worlds := make([]domain.World, len(response))
+
+	for i, world := range response {
+		worlds[i] = domain.World{
+			WorldId: world.WorldID,
+			Name:    world.Name,
+		}
+	}
+
+	return worlds, nil
+}
+
+func (g GameQuery) CreateWorld(ctx context.Context, world domain.World) (domain.World, error) {
+	game, err := g.Queries.GetGameFromUuid(ctx, world.GameId)
+	if err != nil {
+		return domain.World{}, err
+	}
+
+	args := repository.CreateWorldParams{
+		WorldID: world.WorldId,
+		Name:    world.Name,
+		GameID:  game.ID,
+	}
+
+	response, err := g.Queries.CreateWorld(ctx, args)
+	if err != nil {
+		return domain.World{}, err
+	}
+
+	return domain.World{
+		WorldId: response.WorldID,
+		Name:    response.Name,
+	}, nil
 }

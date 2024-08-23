@@ -9,10 +9,11 @@ import (
 )
 
 type GameRequest struct {
-	ID     string `jsonapi:"primary,games"`
-	GameId string `jsonapi:"attr,gameId"`
-	Name   string `jsonapi:"attr,name"`
-	Type   string `jsonapi:"attr,type"`
+	ID     string         `jsonapi:"primary,game"`
+	GameId string         `jsonapi:"attr,gameId"`
+	Name   string         `jsonapi:"attr,name"`
+	Type   string         `jsonapi:"attr,type"`
+	Worlds []domain.World `jsonapi:"relation,worlds"`
 	// ID           int    `jsonapi:"primary,blogs"`
 	// Title        string `jsonapi:"attr,title"`
 	// Posts         []*Post   `jsonapi:"relation,posts"`

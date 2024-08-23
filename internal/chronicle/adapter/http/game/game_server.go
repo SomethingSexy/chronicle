@@ -1,6 +1,7 @@
 package game
 
 import (
+	"log"
 	"net/http"
 
 	corePort "github.com/SomethingSexy/chronicle/internal/chronicle/core/port"
@@ -29,6 +30,13 @@ func (h GameHttpServer) Routes() chi.Router {
 	r.Post("/", h.CreateGame)
 	r.Get("/", h.ListGames)
 	r.Get("/{gameId}", h.GetGame)
+
+	// TODO: This is obviously going to get huge
+	// we need to decide how to organize these route handlers
+	// Either at this level or a higher level to apply
+	// relationships to root routes.
+	r.Post("/{gameId}/worlds", h.CreateWorld)
+
 	return r
 }
 
@@ -99,4 +107,22 @@ func (h GameHttpServer) GetGame(w http.ResponseWriter, r *http.Request) {
 		render.Render(w, r, common.ErrInvalidRequest(err))
 		return
 	}
+}
+
+func (h GameHttpServer) CreateWorld(w http.ResponseWriter, r *http.Request) {
+	data := &WorldRequest{}
+	log.Println(r.Body)
+	if err := render.Bind(r, data); err != nil {
+		render.Render(w, r, common.ErrInvalidRequest(err))
+		return
+	}
+
+	if err := h.commands.CreateWorld.Handle(r.Context(), corePort.CreateWorld{
+		World: data.ToDomain(),
+	}); err != nil {
+		render.Render(w, r, common.ErrInvalidRequest(err))
+		return
+	}
+
+	render.Status(r, http.StatusCreated)
 }

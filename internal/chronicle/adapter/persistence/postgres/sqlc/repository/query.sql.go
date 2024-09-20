@@ -9,6 +9,7 @@ import (
 	"context"
 
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 const createGame = `-- name: CreateGame :one
@@ -37,6 +38,47 @@ func (q *Queries) CreateGame(ctx context.Context, arg CreateGameParams) (Game, e
 		&i.GameID,
 		&i.Name,
 		&i.Type,
+	)
+	return i, err
+}
+
+const createLocation = `-- name: CreateLocation :one
+INSERT INTO location (
+  location_id, world_id, type, name, path
+) VALUES (
+  $1, $2, $3, $4, $5
+)
+ON CONFLICT (location_id) DO UPDATE SET
+  name = EXCLUDED.name,
+  type = EXCLUDED.type,
+  path = EXCLUDED.path
+RETURNING id, location_id, world_id, type, name, path
+`
+
+type CreateLocationParams struct {
+	LocationID uuid.UUID
+	WorldID    int64
+	Type       string
+	Name       string
+	Path       pgtype.Text
+}
+
+func (q *Queries) CreateLocation(ctx context.Context, arg CreateLocationParams) (Location, error) {
+	row := q.db.QueryRow(ctx, createLocation,
+		arg.LocationID,
+		arg.WorldID,
+		arg.Type,
+		arg.Name,
+		arg.Path,
+	)
+	var i Location
+	err := row.Scan(
+		&i.ID,
+		&i.LocationID,
+		&i.WorldID,
+		&i.Type,
+		&i.Name,
+		&i.Path,
 	)
 	return i, err
 }

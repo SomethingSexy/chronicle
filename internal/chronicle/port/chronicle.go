@@ -16,4 +16,6 @@ type ChronicleQueries interface {
 	GetGameWorlds(ctx context.Context, gameId uuid.UUID) ([]domain.World, error)
 
 	CreateWorld(ctx context.Context, world domain.World) (domain.World, error)
+
+	CreateLocation(ct context.Context, location domain.Location) (domain.Location, error)
 }

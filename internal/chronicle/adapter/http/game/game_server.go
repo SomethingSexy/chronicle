@@ -36,6 +36,8 @@ func (h GameHttpServer) Routes() chi.Router {
 	// Either at this level or a higher level to apply
 	// relationships to root routes.
 	r.Post("/{gameId}/worlds", h.CreateWorld)
+	// TODO: Eh this probably belongs within a /words/{worldId} path
+	r.Post("/{gameId}/locations", h.CreateLocation)
 
 	return r
 }
@@ -119,6 +121,24 @@ func (h GameHttpServer) CreateWorld(w http.ResponseWriter, r *http.Request) {
 
 	if err := h.commands.CreateWorld.Handle(r.Context(), corePort.CreateWorld{
 		World: data.ToDomain(),
+	}); err != nil {
+		render.Render(w, r, common.ErrInvalidRequest(err))
+		return
+	}
+
+	render.Status(r, http.StatusCreated)
+}
+
+func (h GameHttpServer) CreateLocation(w http.ResponseWriter, r *http.Request) {
+	data := &LocationRequest{}
+	log.Println(r.Body)
+	if err := render.Bind(r, data); err != nil {
+		render.Render(w, r, common.ErrInvalidRequest(err))
+		return
+	}
+
+	if err := h.commands.CreateLocation.Handle(r.Context(), corePort.CreateLocation{
+		Location: data.ToDomain(),
 	}); err != nil {
 		render.Render(w, r, common.ErrInvalidRequest(err))
 		return

@@ -6,6 +6,7 @@ import (
 	"github.com/SomethingSexy/chronicle/internal/chronicle/adapter/persistence/postgres/sqlc/repository"
 	"github.com/SomethingSexy/chronicle/internal/chronicle/core/domain"
 	"github.com/google/uuid"
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
 // TODO: Split this when it gets too big
@@ -116,4 +117,34 @@ func (g GameQuery) CreateWorld(ctx context.Context, world domain.World) (domain.
 		WorldId: response.WorldID,
 		Name:    response.Name,
 	}, nil
+}
+
+func (g GameQuery) CreateLocation(ctx context.Context, location domain.Location) (domain.Location, error) {
+	world, err := g.Queries.GetWorldFromUuid(ctx, location.WorldId)
+	if err != nil {
+		return domain.Location{}, err
+	}
+
+	path := ""
+	for _, part := range location.Path {
+		path = path + "." + part.String()
+	}
+
+	args := repository.CreateLocationParams{
+		LocationID: location.LocationId,
+		WorldID:    world.ID,
+		Name:       location.Name,
+		Type:       location.Type,
+		Path: pgtype.Text{
+			String: path,
+			Valid:  true,
+		},
+	}
+
+	_, err = g.Queries.CreateLocation(ctx, args)
+	if err != nil {
+		return domain.Location{}, err
+	}
+
+	return location, nil
 }

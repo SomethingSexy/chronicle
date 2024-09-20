@@ -66,3 +66,15 @@ WHERE world_id = $1;
 -- name: DeleteWorld :exec
 DELETE FROM world
 WHERE world_id = $1;
+
+-- name: CreateLocation :one
+INSERT INTO location (
+  location_id, world_id, type, name, path
+) VALUES (
+  $1, $2, $3, $4, $5
+)
+ON CONFLICT (location_id) DO UPDATE SET
+  name = EXCLUDED.name,
+  type = EXCLUDED.type,
+  path = EXCLUDED.path
+RETURNING *;

@@ -8,8 +8,9 @@ import (
 
 func NewApplication(persistence port.ChronicleQueries) port.ChronicleApplication {
 	commands := port.ChronicleCommands{
-		CreateGame:  command.NewCreateGameCommand(persistence),
-		CreateWorld: command.NewCreateWorldCommand(persistence),
+		CreateGame:     command.NewCreateGameCommand(persistence),
+		CreateWorld:    command.NewCreateWorldCommand(persistence),
+		CreateLocation: command.NewCreateLocationCommand(persistence),
 	}
 
 	queries := port.GameQueries{

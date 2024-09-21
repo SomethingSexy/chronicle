@@ -9,7 +9,7 @@ import (
 )
 
 type WorldRequest struct {
-	ID      string `jsonapi:"primary,world"`
+	ID      string `jsonapi:"primary,worlds"`
 	WorldId string `jsonapi:"attr,worldId"`
 	GameId  string `jsonapi:"attr,gameId"`
 	Name    string `jsonapi:"attr,name"`

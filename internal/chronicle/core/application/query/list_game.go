@@ -26,15 +26,13 @@ func (h listGamesHandler) Handle(ctx context.Context, _ gamePort.AllGamesQuery) 
 		return nil, err
 	}
 
-	for _, game := range games {
-		world, err := h.Persistence.GetGameWorlds(ctx, game.GameId)
+	for i := 0; i < len(games); i++ {
+		world, err := h.Persistence.GetGameWorlds(ctx, games[i].GameId)
 		if err != nil {
 			return nil, err
 		}
-		// TODO: Need to decide how many worlds to support in a game
-		if len(world) > 0 {
-			game.World = &world[0]
-		}
+
+		games[i].Worlds = world
 	}
 
 	return games, nil

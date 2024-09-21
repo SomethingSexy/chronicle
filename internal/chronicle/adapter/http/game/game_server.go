@@ -68,11 +68,21 @@ func (h GameHttpServer) ListGames(w http.ResponseWriter, r *http.Request) {
 
 	responses := make([]*GameRequest, len(games))
 	for i, game := range games {
+		worlds := make([]*WorldRequest, len(game.Worlds))
+
+		for x, world := range game.Worlds {
+			worlds[x] = &WorldRequest{
+				ID:      world.WorldId.String(),
+				WorldId: world.WorldId.String(),
+				Name:    world.Name,
+			}
+		}
 		responses[i] = &GameRequest{
 			ID:     game.GameId.String(),
 			GameId: game.GameId.String(),
 			Name:   game.Name,
 			Type:   game.Type,
+			Worlds: worlds,
 		}
 	}
 

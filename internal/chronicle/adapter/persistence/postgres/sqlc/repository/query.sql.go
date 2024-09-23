@@ -52,7 +52,7 @@ ON CONFLICT (location_id) DO UPDATE SET
   name = EXCLUDED.name,
   type = EXCLUDED.type,
   path = EXCLUDED.path
-RETURNING id, location_id, world_id, type, name, path
+RETURNING id, location_id, game_id, world_id, type, name, path
 `
 
 type CreateLocationParams struct {
@@ -75,6 +75,7 @@ func (q *Queries) CreateLocation(ctx context.Context, arg CreateLocationParams) 
 	err := row.Scan(
 		&i.ID,
 		&i.LocationID,
+		&i.GameID,
 		&i.WorldID,
 		&i.Type,
 		&i.Name,
@@ -244,6 +245,73 @@ func (q *Queries) GetWorldFromUuid(ctx context.Context, worldID uuid.UUID) (Worl
 		&i.Name,
 	)
 	return i, err
+}
+
+const getWorldLocations = `-- name: GetWorldLocations :many
+SELECT location.id, location_id, location.game_id, location.world_id, location.type, location.name, path, world.id, world.world_id, world.game_id, world.name, game.id, game.game_id, game.name, game.type FROM location
+JOIN world ON location.world_id = world.id
+JOIN game ON location.game_id = game.id
+WHERE game.game_id = $1 and
+world.world_id = $2
+`
+
+type GetWorldLocationsParams struct {
+	GameID  uuid.UUID
+	WorldID uuid.UUID
+}
+
+type GetWorldLocationsRow struct {
+	ID         int64
+	LocationID uuid.UUID
+	GameID     int64
+	WorldID    int64
+	Type       string
+	Name       string
+	Path       pgtype.Text
+	ID_2       int64
+	WorldID_2  uuid.UUID
+	GameID_2   int64
+	Name_2     string
+	ID_3       int64
+	GameID_3   uuid.UUID
+	Name_3     string
+	Type_2     string
+}
+
+func (q *Queries) GetWorldLocations(ctx context.Context, arg GetWorldLocationsParams) ([]GetWorldLocationsRow, error) {
+	rows, err := q.db.Query(ctx, getWorldLocations, arg.GameID, arg.WorldID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetWorldLocationsRow
+	for rows.Next() {
+		var i GetWorldLocationsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.LocationID,
+			&i.GameID,
+			&i.WorldID,
+			&i.Type,
+			&i.Name,
+			&i.Path,
+			&i.ID_2,
+			&i.WorldID_2,
+			&i.GameID_2,
+			&i.Name_2,
+			&i.ID_3,
+			&i.GameID_3,
+			&i.Name_3,
+			&i.Type_2,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const listGames = `-- name: ListGames :many

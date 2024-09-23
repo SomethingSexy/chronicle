@@ -9,7 +9,7 @@ import (
 )
 
 type LocationRequest struct {
-	ID         string   `jsonapi:"primary,location"`
+	ID         string   `jsonapi:"primary,locations"`
 	LocationId string   `jsonapi:"attr,locationId"`
 	WorldId    string   `jsonapi:"attr,worldId"`
 	Name       string   `jsonapi:"attr,name"`

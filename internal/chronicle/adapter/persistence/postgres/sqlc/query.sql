@@ -78,3 +78,10 @@ ON CONFLICT (location_id) DO UPDATE SET
   type = EXCLUDED.type,
   path = EXCLUDED.path
 RETURNING *;
+
+-- name: GetWorldLocations :many
+SELECT * FROM location
+JOIN world ON location.world_id = world.id
+JOIN game ON location.game_id = game.id
+WHERE game.game_id = $1 and
+world.world_id = $2;

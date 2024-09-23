@@ -22,11 +22,14 @@ create index world_game_id on world(game_id);
 CREATE TABLE location (
   id BIGSERIAL PRIMARY KEY,
   location_id uuid UNIQUE NOT NULL,
+  -- Adding game_id here for now, incase we want locations independent of world?
+  game_id BIGSERIAL NOT NULL REFERENCES game(id),
   world_id BIGSERIAL NOT NULL REFERENCES world(id),
   type text NOT NULL,
   name text NOT NULL,
   path ltree
 );
 
+create index location_game_id on location(game_id);
 create index location_world_id on location(world_id);
 create index location_path_idx on location using gist (path);

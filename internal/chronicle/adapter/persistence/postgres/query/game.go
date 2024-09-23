@@ -2,6 +2,7 @@ package query
 
 import (
 	"context"
+	"strings"
 
 	"github.com/SomethingSexy/chronicle/internal/chronicle/adapter/persistence/postgres/sqlc/repository"
 	"github.com/SomethingSexy/chronicle/internal/chronicle/core/domain"
@@ -89,6 +90,7 @@ func (g GameQuery) GetGameWorlds(ctx context.Context, gameId uuid.UUID) ([]domai
 	for i, world := range response {
 		worlds[i] = domain.World{
 			WorldId: world.WorldID,
+			GameId:  gameId,
 			Name:    world.Name,
 		}
 	}
@@ -116,6 +118,19 @@ func (g GameQuery) CreateWorld(ctx context.Context, world domain.World) (domain.
 	return domain.World{
 		WorldId: response.WorldID,
 		Name:    response.Name,
+	}, nil
+}
+
+func (g GameQuery) GetWorld(ctx context.Context, gameId uuid.UUID, worldId uuid.UUID) (domain.World, error) {
+	world, err := g.Queries.GetWorldFromUuid(ctx, worldId)
+	if err != nil {
+		return domain.World{}, err
+	}
+
+	return domain.World{
+		WorldId: world.WorldID,
+		GameId:  gameId,
+		Name:    world.Name,
 	}, nil
 }
 
@@ -147,4 +162,42 @@ func (g GameQuery) CreateLocation(ctx context.Context, location domain.Location)
 	}
 
 	return location, nil
+}
+
+func (g GameQuery) ListLocations(ctx context.Context, gameId uuid.UUID, worldId uuid.UUID) ([]domain.Location, error) {
+	response, err := g.Queries.GetWorldLocations(ctx, repository.GetWorldLocationsParams{
+		GameID:  gameId,
+		WorldID: worldId,
+	})
+	if err != nil {
+		return []domain.Location{}, err
+	}
+
+	locations := make([]domain.Location, len(response))
+
+	for i, location := range response {
+		var paths []uuid.UUID
+		// Split might return a string with a single element here
+		if location.Path.String != "" {
+			rawPaths := strings.Split(location.Path.String, ".")
+			for _, path := range rawPaths {
+				// This error should never but ya know...
+				parsed, err := uuid.Parse(path)
+				if err != nil {
+					return []domain.Location{}, err
+				}
+				paths = append(paths, parsed)
+			}
+		}
+
+		locations[i] = domain.Location{
+			LocationId: location.LocationID,
+			WorldId:    location.WorldID_2,
+			Name:       location.Name,
+			Type:       location.Type,
+			Path:       paths,
+		}
+	}
+
+	return locations, nil
 }

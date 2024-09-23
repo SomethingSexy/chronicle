@@ -1,7 +1,6 @@
 package game
 
 import (
-	"log"
 	"net/http"
 
 	corePort "github.com/SomethingSexy/chronicle/internal/chronicle/core/port"
@@ -36,8 +35,9 @@ func (h GameHttpServer) Routes() chi.Router {
 	// Either at this level or a higher level to apply
 	// relationships to root routes.
 	r.Post("/{gameId}/worlds", h.CreateWorld)
-	// TODO: Eh this probably belongs within a /words/{worldId} path
-	r.Post("/{gameId}/locations", h.CreateLocation)
+	r.Get("/{gameId}/worlds/{worldId}", h.GetWorld)
+	r.Post("/{gameId}/worlds/{worldId}/locations", h.CreateLocation)
+	r.Get("/{gameId}/worlds/{worldId}/locations", h.GetLocations)
 
 	return r
 }
@@ -74,6 +74,7 @@ func (h GameHttpServer) ListGames(w http.ResponseWriter, r *http.Request) {
 			worlds[x] = &WorldRequest{
 				ID:      world.WorldId.String(),
 				WorldId: world.WorldId.String(),
+				GameId:  world.GameId.String(),
 				Name:    world.Name,
 			}
 		}
@@ -123,7 +124,6 @@ func (h GameHttpServer) GetGame(w http.ResponseWriter, r *http.Request) {
 
 func (h GameHttpServer) CreateWorld(w http.ResponseWriter, r *http.Request) {
 	data := &WorldRequest{}
-	log.Println(r.Body)
 	if err := render.Bind(r, data); err != nil {
 		render.Render(w, r, common.ErrInvalidRequest(err))
 		return
@@ -139,9 +139,37 @@ func (h GameHttpServer) CreateWorld(w http.ResponseWriter, r *http.Request) {
 	render.Status(r, http.StatusCreated)
 }
 
+func (h GameHttpServer) GetWorld(w http.ResponseWriter, r *http.Request) {
+	gameId := chi.URLParam(r, "gameId")
+	worldId := chi.URLParam(r, "worldId")
+
+	world, err := h.queries.GetWorld.Handle(r.Context(), corePort.GetWorldQuery{
+		// TODO: BAD check for error
+		GameId:  uuid.MustParse(gameId),
+		WorldId: uuid.MustParse(worldId),
+	})
+	if err != nil {
+		render.Render(w, r, common.ErrInvalidRequest(err))
+		return
+	}
+
+	response := &WorldRequest{
+		ID:      world.WorldId.String(),
+		WorldId: world.WorldId.String(),
+		GameId:  world.GameId.String(),
+		Name:    world.Name,
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", jsonapi.MediaType)
+	if err := jsonapi.MarshalPayload(w, response); err != nil {
+		render.Render(w, r, common.ErrInvalidRequest(err))
+		return
+	}
+}
+
 func (h GameHttpServer) CreateLocation(w http.ResponseWriter, r *http.Request) {
 	data := &LocationRequest{}
-	log.Println(r.Body)
 	if err := render.Bind(r, data); err != nil {
 		render.Render(w, r, common.ErrInvalidRequest(err))
 		return
@@ -155,4 +183,44 @@ func (h GameHttpServer) CreateLocation(w http.ResponseWriter, r *http.Request) {
 	}
 
 	render.Status(r, http.StatusCreated)
+}
+
+func (h GameHttpServer) GetLocations(w http.ResponseWriter, r *http.Request) {
+	gameId := chi.URLParam(r, "gameId")
+	worldId := chi.URLParam(r, "worldId")
+
+	locations, err := h.queries.ListLocations.Handle(r.Context(), corePort.LocationsQuery{
+		// TODO: BAD check for error
+		GameId:  uuid.MustParse(gameId),
+		WorldId: uuid.MustParse(worldId),
+	})
+	if err != nil {
+		render.Render(w, r, common.ErrInvalidRequest(err))
+		return
+	}
+
+	responses := make([]*LocationRequest, len(locations))
+
+	for i, location := range locations {
+		paths := make([]string, len(location.Path))
+		for x, path := range location.Path {
+			paths[x] = path.String()
+		}
+
+		responses[i] = &LocationRequest{
+			ID:         location.LocationId.String(),
+			LocationId: location.LocationId.String(),
+			WorldId:    location.WorldId.String(),
+			Name:       location.Name,
+			Type:       location.Type,
+			Path:       paths,
+		}
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Header().Set("Content-Type", jsonapi.MediaType)
+	if err := jsonapi.MarshalPayload(w, responses); err != nil {
+		render.Render(w, r, common.ErrInvalidRequest(err))
+		return
+	}
 }

@@ -19,8 +19,8 @@ type listGamesHandler struct {
 }
 
 func (h listGamesHandler) Handle(ctx context.Context, _ gamePort.AllGamesQuery) ([]domain.Game, error) {
-	// Fetching these separately for now, when necessary we could make these joins at the lower level but
-	// this gets me more power to decide what I want to fetch when
+	// Fetching these separately for now, when necessary we could make these joins at the lower level
+	// For now, this gives me more power to move this logic around as needed
 	games, err := h.Persistence.ListGames(ctx)
 	if err != nil {
 		return nil, err

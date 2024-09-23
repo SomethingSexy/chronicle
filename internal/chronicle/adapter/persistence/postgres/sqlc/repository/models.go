@@ -19,6 +19,7 @@ type Game struct {
 type Location struct {
 	ID         int64
 	LocationID uuid.UUID
+	GameID     int64
 	WorldID    int64
 	Type       string
 	Name       string

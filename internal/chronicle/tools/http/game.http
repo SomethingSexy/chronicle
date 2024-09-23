@@ -10,7 +10,7 @@ Content-Type: application/vnd.api+json
 
 {
     "data": {
-        "type": "game",
+        "type": "games",
         "attributes": {
             "gameId": "{{gameId}}",
             "name": "Milwaukee By Night",
@@ -28,7 +28,7 @@ Content-Type: application/vnd.api+json
 
 {
     "data": {
-        "type": "world",
+        "type": "worlds",
         "attributes": {
             "worldId": "{{worldId}}",
             "gameId": "{{gameId}}",
@@ -39,6 +39,12 @@ Content-Type: application/vnd.api+json
 
 ###
 
+# @name get_world
+GET http://localhost:3000/games/{{gameId}}/worlds/{{worldId}}
+Content-Type: application/vnd.api+json
+
+###
+
 # @name list
 GET http://localhost:3000/games
 Content-Type: application/vnd.api+json
@@ -46,14 +52,15 @@ Content-Type: application/vnd.api+json
 ###
 
 # @name create_location
-POST http://localhost:3000/games/{{gameId}}/locations
+POST http://localhost:3000/games/{{gameId}}/worlds/{{worldId}}/locations
 Content-Type: application/vnd.api+json
 
 {
     "data": {
-        "type": "location",
+        "type": "locations",
         "attributes": {
             "locationId": "{{locationId}}",
+            "gameId": "{{gameId}}",
             "worldId": "{{worldId}}",
             "name": "My Location",
             "type": "City"

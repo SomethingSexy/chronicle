@@ -69,3 +69,9 @@ atlas migrate apply \
 Using the free version of Atlas, we need to manually add extensions.
 
 Right now we are adding them to the root migration (probably should make this a separate first migration).
+
+Need to run the following after manually adding extensions.
+
+```shell
+atlas migrate hash
+```

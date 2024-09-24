@@ -3,6 +3,7 @@ package query
 import (
 	"context"
 	"strings"
+	"time"
 
 	"github.com/SomethingSexy/chronicle/internal/chronicle/adapter/persistence/postgres/sqlc/repository"
 	"github.com/SomethingSexy/chronicle/internal/chronicle/core/domain"
@@ -23,10 +24,16 @@ type GameQuery struct {
 
 // Create a game
 func (g GameQuery) CreateGame(ctx context.Context, game domain.Game) (domain.Game, error) {
+	ts := pgtype.Timestamptz{
+		Time:  time.Now(),
+		Valid: true,
+	}
 	args := repository.CreateGameParams{
-		GameID: game.GameId,
-		Name:   game.Name,
-		Type:   game.Type,
+		GameID:    game.GameId,
+		Name:      game.Name,
+		Type:      game.Type,
+		CreatedAt: ts,
+		UpdatedAt: ts,
 	}
 
 	response, err := g.Queries.CreateGame(ctx, args)
@@ -104,10 +111,16 @@ func (g GameQuery) CreateWorld(ctx context.Context, world domain.World) (domain.
 		return domain.World{}, err
 	}
 
+	ts := pgtype.Timestamptz{
+		Time:  time.Now(),
+		Valid: true,
+	}
 	args := repository.CreateWorldParams{
-		WorldID: world.WorldId,
-		Name:    world.Name,
-		GameID:  game.ID,
+		WorldID:   world.WorldId,
+		Name:      world.Name,
+		GameID:    game.ID,
+		CreatedAt: ts,
+		UpdatedAt: ts,
 	}
 
 	response, err := g.Queries.CreateWorld(ctx, args)
@@ -154,6 +167,10 @@ func (g GameQuery) CreateLocation(ctx context.Context, location domain.Location)
 		}
 	}
 
+	ts := pgtype.Timestamptz{
+		Time:  time.Now(),
+		Valid: true,
+	}
 	args := repository.CreateLocationParams{
 		LocationID: location.LocationId,
 		WorldID:    world.ID,
@@ -164,6 +181,8 @@ func (g GameQuery) CreateLocation(ctx context.Context, location domain.Location)
 			String: path,
 			Valid:  true,
 		},
+		CreatedAt: ts,
+		UpdatedAt: ts,
 	}
 
 	_, err = g.Queries.CreateLocation(ctx, args)

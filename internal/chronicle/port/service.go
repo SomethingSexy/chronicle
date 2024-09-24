@@ -7,7 +7,7 @@ import (
 type ChronicleApplication struct {
 	Commands    ChronicleCommands
 	Queries     GameQueries
-	Persistence ChronicleQueries
+	Persistence Persistence
 }
 
 type ChronicleCommands struct {

@@ -9,11 +9,22 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type Character struct {
+	ID          int64
+	CharacterID uuid.UUID
+	Name        string
+	Description pgtype.Text
+	CreatedAt   pgtype.Timestamptz
+	UpdatedAt   pgtype.Timestamptz
+}
+
 type Game struct {
-	ID     int64
-	GameID uuid.UUID
-	Name   string
-	Type   string
+	ID        int64
+	GameID    uuid.UUID
+	Name      string
+	Type      string
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
 }
 
 type Location struct {
@@ -24,11 +35,15 @@ type Location struct {
 	Type       string
 	Name       string
 	Path       pgtype.Text
+	CreatedAt  pgtype.Timestamptz
+	UpdatedAt  pgtype.Timestamptz
 }
 
 type World struct {
-	ID      int64
-	WorldID uuid.UUID
-	GameID  int64
-	Name    string
+	ID        int64
+	WorldID   uuid.UUID
+	GameID    int64
+	Name      string
+	CreatedAt pgtype.Timestamptz
+	UpdatedAt pgtype.Timestamptz
 }

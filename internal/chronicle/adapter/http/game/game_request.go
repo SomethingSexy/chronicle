@@ -14,13 +14,6 @@ type GameRequest struct {
 	Name   string          `jsonapi:"attr,name"`
 	Type   string          `jsonapi:"attr,type"`
 	Worlds []*WorldRequest `jsonapi:"relation,worlds"`
-	// ID           int    `jsonapi:"primary,blogs"`
-	// Title        string `jsonapi:"attr,title"`
-	// Posts         []*Post   `jsonapi:"relation,posts"`
-	// CurrentPost   *Post     `jsonapi:"relation,current_post"`
-	// CurrentPostID int       `jsonapi:"attr,current_post_id"`
-	// CreatedAt     time.Time `jsonapi:"attr,created_at"`
-	// ViewCount     int       `jsonapi:"attr,view_count"`
 }
 
 func (a *GameRequest) Bind(r *http.Request) error {

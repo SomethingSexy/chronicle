@@ -9,7 +9,7 @@ import (
 	"github.com/SomethingSexy/chronicle/internal/chronicle/adapter/http/game"
 	"github.com/SomethingSexy/chronicle/internal/chronicle/adapter/persistence/postgres/query"
 	"github.com/SomethingSexy/chronicle/internal/chronicle/adapter/persistence/postgres/sqlc/repository"
-	gameApplication "github.com/SomethingSexy/chronicle/internal/chronicle/core/application"
+	"github.com/SomethingSexy/chronicle/internal/chronicle/core/application"
 	"github.com/SomethingSexy/chronicle/internal/chronicle/port"
 	"github.com/go-chi/chi/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -27,12 +27,15 @@ func NewService() {
 	q := repository.New(db)
 
 	// TODO: We will need to create these individally as we add and merge together
-	chronicleQueries := query.NewGameQuery(q)
+	persistence := port.Persistence{
+		Game:      query.NewGameQuery(q),
+		Character: query.NewCharacterQuery(q),
+	}
 
-	game := gameApplication.NewApplication(chronicleQueries)
+	app := application.NewApplication(persistence)
 
 	service := ChronicleService{
-		ChronicleApplication: game,
+		ChronicleApplication: app,
 	}
 
 	httpServer := http.NewHttpServer(service)

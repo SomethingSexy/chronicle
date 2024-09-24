@@ -6,18 +6,18 @@ import (
 	"github.com/SomethingSexy/chronicle/internal/chronicle/port"
 )
 
-func NewApplication(persistence port.ChronicleQueries) port.ChronicleApplication {
+func NewApplication(persistence port.Persistence) port.ChronicleApplication {
 	commands := port.ChronicleCommands{
-		CreateGame:     command.NewCreateGameCommand(persistence),
-		CreateWorld:    command.NewCreateWorldCommand(persistence),
-		CreateLocation: command.NewCreateLocationCommand(persistence),
+		CreateGame:     command.NewCreateGameCommand(persistence.Game),
+		CreateWorld:    command.NewCreateWorldCommand(persistence.Game),
+		CreateLocation: command.NewCreateLocationCommand(persistence.Game),
 	}
 
 	queries := port.GameQueries{
-		ListGames:     query.NewListGamesHandler(persistence),
-		GetGame:       query.NewGetGameHandler(persistence),
-		ListLocations: query.NewListLocationsHandler(persistence),
-		GetWorld:      query.NewGetWorldHandler(persistence),
+		ListGames:     query.NewListGamesHandler(persistence.Game),
+		GetGame:       query.NewGetGameHandler(persistence.Game),
+		ListLocations: query.NewListLocationsHandler(persistence.Game),
+		GetWorld:      query.NewGetWorldHandler(persistence.Game),
 	}
 
 	return port.ChronicleApplication{

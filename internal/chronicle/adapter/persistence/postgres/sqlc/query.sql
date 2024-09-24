@@ -12,19 +12,21 @@ ORDER BY name;
 
 -- name: CreateGame :one
 INSERT INTO game (
-  game_id, name, type
+  game_id, name, type, created_at, updated_at
 ) VALUES (
-  $1, $2, $3
+  $1, $2, $3, $4, $5
 )
 ON CONFLICT (game_id) DO UPDATE SET
   name = EXCLUDED.name,
-  type = EXCLUDED.type
+  type = EXCLUDED.type,
+  updated_at = EXCLUDED.updated_at
 RETURNING *;
 
 -- name: UpdateGame :exec
 UPDATE game
   set name = $2,
-  type = $3
+  type = $3,
+  updated_at = $4
 WHERE game_id = $1;
 
 -- name: DeleteGame :exec
@@ -50,12 +52,13 @@ ORDER BY name;
 
 -- name: CreateWorld :one
 INSERT INTO world (
-  world_id, game_id, name
+  world_id, game_id, name, created_at, updated_at
 ) VALUES (
-  $1, $2, $3
+  $1, $2, $3, $4, $5
 )
 ON CONFLICT (world_id) DO UPDATE SET
-  name = EXCLUDED.name
+  name = EXCLUDED.name,
+  updated_at = EXCLUDED.updated_at
 RETURNING *;
 
 -- name: UpdateWorld :exec
@@ -69,14 +72,15 @@ WHERE world_id = $1;
 
 -- name: CreateLocation :one
 INSERT INTO location (
-  location_id, world_id, game_id, type, name, path
+  location_id, world_id, game_id, type, name, path, created_at, updated_at
 ) VALUES (
-  $1, $2, $3, $4, $5, $6
+  $1, $2, $3, $4, $5, $6, $7, $8
 )
 ON CONFLICT (location_id) DO UPDATE SET
   name = EXCLUDED.name,
   type = EXCLUDED.type,
-  path = EXCLUDED.path
+  path = EXCLUDED.path,
+  updated_at = EXCLUDED.updated_at
 RETURNING *;
 
 -- name: GetWorldLocations :many
@@ -85,3 +89,23 @@ JOIN world ON location.world_id = world.id
 JOIN game ON location.game_id = game.id
 WHERE game.game_id = $1 and
 world.world_id = $2;
+
+-- name: CreateCharacter :one
+INSERT INTO character (
+  character_id, name, description, created_at, updated_at
+) VALUES (
+  $1, $2, $3, $4, $5
+)
+ON CONFLICT (character_id) DO UPDATE SET
+  name = EXCLUDED.name,
+  description = EXCLUDED.description,
+  updated_at = EXCLUDED.updated_at
+RETURNING *;
+
+-- name: GetCharacter :one
+SELECT * FROM character
+WHERE id = $1 LIMIT 1;
+
+-- name: GetCharacterFromUuid :one
+SELECT * FROM character
+WHERE character.character_id = $1 LIMIT 1;

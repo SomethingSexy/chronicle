@@ -153,11 +153,29 @@ func (h GameHttpServer) GetWorld(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	locations := make([]*LocationRequest, len(world.Locations))
+	for i, location := range world.Locations {
+		paths := make([]string, len(location.Path))
+		for x, path := range location.Path {
+			paths[x] = path.String()
+		}
+
+		locations[i] = &LocationRequest{
+			ID:         location.LocationId.String(),
+			LocationId: location.LocationId.String(),
+			WorldId:    location.WorldId.String(),
+			Name:       location.Name,
+			Type:       location.Type,
+			Path:       paths,
+		}
+	}
+
 	response := &WorldRequest{
-		ID:      world.WorldId.String(),
-		WorldId: world.WorldId.String(),
-		GameId:  world.GameId.String(),
-		Name:    world.Name,
+		ID:        world.WorldId.String(),
+		WorldId:   world.WorldId.String(),
+		GameId:    world.GameId.String(),
+		Name:      world.Name,
+		Locations: locations,
 	}
 
 	w.WriteHeader(http.StatusOK)

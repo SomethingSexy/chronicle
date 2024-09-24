@@ -30,7 +30,7 @@ func (h getWorldHandler) Handle(ctx context.Context, q worldPort.GetWorldQuery) 
 		return domain.World{}, err
 	}
 
-	world.Loocation = locations
+	world.Locations = locations
 
 	return world, nil
 }

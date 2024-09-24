@@ -141,13 +141,23 @@ func (g GameQuery) CreateLocation(ctx context.Context, location domain.Location)
 	}
 
 	path := ""
-	for _, part := range location.Path {
-		path = path + "." + part.String()
+	pathsLength := len(location.Path)
+
+	if pathsLength > 0 {
+		if pathsLength == 1 {
+			path = location.Path[0].String()
+
+		} else {
+			for _, part := range location.Path {
+				path = path + "." + part.String()
+			}
+		}
 	}
 
 	args := repository.CreateLocationParams{
 		LocationID: location.LocationId,
 		WorldID:    world.ID,
+		GameID:     world.GameID,
 		Name:       location.Name,
 		Type:       location.Type,
 		Path: pgtype.Text{

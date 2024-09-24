@@ -44,9 +44,9 @@ func (q *Queries) CreateGame(ctx context.Context, arg CreateGameParams) (Game, e
 
 const createLocation = `-- name: CreateLocation :one
 INSERT INTO location (
-  location_id, world_id, type, name, path
+  location_id, world_id, game_id, type, name, path
 ) VALUES (
-  $1, $2, $3, $4, $5
+  $1, $2, $3, $4, $5, $6
 )
 ON CONFLICT (location_id) DO UPDATE SET
   name = EXCLUDED.name,
@@ -58,6 +58,7 @@ RETURNING id, location_id, game_id, world_id, type, name, path
 type CreateLocationParams struct {
 	LocationID uuid.UUID
 	WorldID    int64
+	GameID     int64
 	Type       string
 	Name       string
 	Path       pgtype.Text
@@ -67,6 +68,7 @@ func (q *Queries) CreateLocation(ctx context.Context, arg CreateLocationParams) 
 	row := q.db.QueryRow(ctx, createLocation,
 		arg.LocationID,
 		arg.WorldID,
+		arg.GameID,
 		arg.Type,
 		arg.Name,
 		arg.Path,

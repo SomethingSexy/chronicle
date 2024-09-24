@@ -69,9 +69,9 @@ WHERE world_id = $1;
 
 -- name: CreateLocation :one
 INSERT INTO location (
-  location_id, world_id, type, name, path
+  location_id, world_id, game_id, type, name, path
 ) VALUES (
-  $1, $2, $3, $4, $5
+  $1, $2, $3, $4, $5, $6
 )
 ON CONFLICT (location_id) DO UPDATE SET
   name = EXCLUDED.name,

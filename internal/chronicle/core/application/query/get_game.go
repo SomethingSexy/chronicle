@@ -8,14 +8,14 @@ import (
 	"github.com/SomethingSexy/chronicle/internal/chronicle/port"
 )
 
-func NewGetGameHandler(persistence port.ChronicleQueries) gamePort.GetGameHandler {
+func NewGetGameHandler(persistence port.GamePersistence) gamePort.GetGameHandler {
 	return getGameHandler{
 		Persistence: persistence,
 	}
 }
 
 type getGameHandler struct {
-	Persistence port.ChronicleQueries
+	Persistence port.GamePersistence
 }
 
 func (h getGameHandler) Handle(ctx context.Context, q gamePort.GetGameQuery) (domain.Game, error) {

@@ -16,6 +16,8 @@ type HttpServer struct {
 	app common.Service
 }
 
+// TODO: Does it make more sense that we pass in the core interfaces here
+// and keep the route logic internal to this package, instead of passing it in?
 func NewHttpServer(application common.Service) HttpServer {
 	return HttpServer{
 		app: application,
@@ -30,7 +32,8 @@ func (h HttpServer) Start() {
 	render.Decode = DefaultDecoder
 
 	// TODO: Given the application, this should mount all of the route handlers
-	r.Mount("/games", h.app.Routes()[0])
+	r.Mount("/games", h.app.Routes()["Games"][0])
+	r.Mount("/characters", h.app.Routes()["Characters"][0])
 
 	http.ListenAndServe(":3000", r)
 }

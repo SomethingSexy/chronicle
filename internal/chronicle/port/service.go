@@ -6,11 +6,21 @@ import (
 
 type ChronicleApplication struct {
 	Commands    ChronicleCommands
-	Queries     GameQueries
+	Queries     ChronicleQueries
 	Persistence Persistence
 }
 
 type ChronicleCommands struct {
+	GameCommands
+	CharacterCommands
+}
+
+type ChronicleQueries struct {
+	GameQueries
+	CharacterQueries
+}
+
+type GameCommands struct {
 	CreateGame     corePort.CreateGameHander
 	CreateWorld    corePort.CreateWorldHander
 	CreateLocation corePort.CreateLocationHander
@@ -22,3 +32,9 @@ type GameQueries struct {
 	ListGames     corePort.ListGamesHandler
 	ListLocations corePort.ListLocationsHandler
 }
+
+type CharacterCommands struct {
+	CreateCharacter corePort.CreateCharacterHandler
+}
+
+type CharacterQueries struct{}

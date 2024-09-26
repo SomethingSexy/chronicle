@@ -7,22 +7,28 @@ import (
 )
 
 func NewApplication(persistence port.Persistence) port.ChronicleApplication {
-	commands := port.ChronicleCommands{
+	gameCommands := port.GameCommands{
 		CreateGame:     command.NewCreateGameCommand(persistence.Game),
 		CreateWorld:    command.NewCreateWorldCommand(persistence.Game),
 		CreateLocation: command.NewCreateLocationCommand(persistence.Game),
 	}
 
-	queries := port.GameQueries{
+	characterCommands := port.CharacterCommands{
+		CreateCharacter: command.NewCreateCharacterCommand(persistence.Character),
+	}
+
+	gameQueries := port.GameQueries{
 		ListGames:     query.NewListGamesHandler(persistence.Game),
 		GetGame:       query.NewGetGameHandler(persistence.Game),
 		ListLocations: query.NewListLocationsHandler(persistence.Game),
 		GetWorld:      query.NewGetWorldHandler(persistence.Game),
 	}
 
+	characterQueries := port.CharacterQueries{}
+
 	return port.ChronicleApplication{
-		Commands:    commands,
-		Queries:     queries,
+		Commands:    port.ChronicleCommands{GameCommands: gameCommands, CharacterCommands: characterCommands},
+		Queries:     port.ChronicleQueries{GameQueries: gameQueries, CharacterQueries: characterQueries},
 		Persistence: persistence,
 	}
 }

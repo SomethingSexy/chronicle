@@ -54,7 +54,7 @@ Run all migrations on a new database
 ```shell
 atlas migrate apply \
   --url "postgres://postgres:postgres@db:5432/chronicle?sslmode=disable"  \
-  --dir "file://migrations" 
+  --dir "file://migrations"
 ```
 
 Migrate from a baseline, the baseline will be ignored

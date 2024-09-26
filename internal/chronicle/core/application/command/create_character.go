@@ -9,14 +9,14 @@ import (
 	"github.com/SomethingSexy/chronicle/internal/common"
 )
 
-func NewCreateCharacterCommand(persistence port.CharacterQueries) common.CommandHandler[corePort.CreateCharacter] {
+func NewCreateCharacterCommand(persistence port.CharacterPersistence) common.CommandHandler[corePort.CreateCharacter] {
 	return createCharacterHandler{
 		Persistence: persistence,
 	}
 }
 
 type createCharacterHandler struct {
-	Persistence port.CharacterQueries
+	Persistence port.CharacterPersistence
 }
 
 func (c createCharacterHandler) Handle(ctx context.Context, cmd corePort.CreateCharacter) error {

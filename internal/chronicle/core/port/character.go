@@ -9,4 +9,4 @@ type CreateCharacter struct {
 	Character domain.Character
 }
 
-type CreateCharacterHander common.CommandHandler[CreateCharacter]
+type CreateCharacterHandler common.CommandHandler[CreateCharacter]

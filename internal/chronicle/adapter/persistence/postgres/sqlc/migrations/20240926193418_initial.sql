@@ -6,6 +6,8 @@ CREATE TABLE "public"."character" (
   "character_id" uuid NOT NULL,
   "name" text NOT NULL,
   "description" text NULL,
+  "created_at" timestamptz NOT NULL DEFAULT now(),
+  "updated_at" timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY ("id"),
   CONSTRAINT "character_character_id_key" UNIQUE ("character_id")
 );
@@ -15,6 +17,8 @@ CREATE TABLE "public"."game" (
   "game_id" uuid NOT NULL,
   "name" text NOT NULL,
   "type" text NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT now(),
+  "updated_at" timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY ("id"),
   CONSTRAINT "game_game_id_key" UNIQUE ("game_id")
 );
@@ -24,6 +28,8 @@ CREATE TABLE "public"."world" (
   "world_id" uuid NOT NULL,
   "game_id" bigserial NOT NULL,
   "name" text NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT now(),
+  "updated_at" timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY ("id"),
   CONSTRAINT "world_world_id_key" UNIQUE ("world_id"),
   CONSTRAINT "world_game_id_fkey" FOREIGN KEY ("game_id") REFERENCES "public"."game" ("id") ON UPDATE NO ACTION ON DELETE NO ACTION
@@ -39,6 +45,8 @@ CREATE TABLE "public"."location" (
   "type" text NOT NULL,
   "name" text NOT NULL,
   "path" public.ltree NULL,
+  "created_at" timestamptz NOT NULL DEFAULT now(),
+  "updated_at" timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY ("id"),
   CONSTRAINT "location_location_id_key" UNIQUE ("location_id"),
   CONSTRAINT "location_game_id_fkey" FOREIGN KEY ("game_id") REFERENCES "public"."game" ("id") ON UPDATE NO ACTION ON DELETE NO ACTION,

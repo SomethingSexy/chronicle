@@ -9,14 +9,14 @@ import (
 	"github.com/SomethingSexy/chronicle/internal/common"
 )
 
-func NewCreateGameCommand(persistence port.ChronicleQueries) common.CommandHandler[gamePort.CreateGame] {
+func NewCreateGameCommand(persistence port.GamePersistence) common.CommandHandler[gamePort.CreateGame] {
 	return createGameHandler{
 		Persistence: persistence,
 	}
 }
 
 type createGameHandler struct {
-	Persistence port.ChronicleQueries
+	Persistence port.GamePersistence
 }
 
 func (c createGameHandler) Handle(ctx context.Context, cmd gamePort.CreateGame) error {

@@ -10,12 +10,11 @@ import (
 // Port for the rest of the application to interface
 // with the persistence layer
 type Persistence struct {
-	Game      ChronicleQueries
-	Character CharacterQueries
+	Game      GamePersistence
+	Character CharacterPersistence
 }
 
-// TODO: Probably a better name for this
-type ChronicleQueries interface {
+type GamePersistence interface {
 	CreateGame(ctx context.Context, game domain.Game) (domain.Game, error)
 	ListGames(ctx context.Context) ([]domain.Game, error)
 	GetGame(ctx context.Context, id uuid.UUID) (domain.Game, error)
@@ -28,6 +27,6 @@ type ChronicleQueries interface {
 	ListLocations(ctx context.Context, gameId uuid.UUID, worldId uuid.UUID) ([]domain.Location, error)
 }
 
-type CharacterQueries interface {
+type CharacterPersistence interface {
 	CreateCharacter(ctx context.Context, character domain.Character) (domain.Character, error)
 }

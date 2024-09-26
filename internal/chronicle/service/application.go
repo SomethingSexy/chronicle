@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/SomethingSexy/chronicle/internal/chronicle/adapter/http"
+	"github.com/SomethingSexy/chronicle/internal/chronicle/adapter/http/character"
 	"github.com/SomethingSexy/chronicle/internal/chronicle/adapter/http/game"
 	"github.com/SomethingSexy/chronicle/internal/chronicle/adapter/persistence/postgres/query"
 	"github.com/SomethingSexy/chronicle/internal/chronicle/adapter/persistence/postgres/sqlc/repository"
@@ -47,22 +48,15 @@ type ChronicleService struct {
 	ChronicleApplication port.ChronicleApplication
 }
 
-func (c ChronicleService) Routes() []chi.Router {
-	gameHttpServer := game.NewGameHttpServer(c.ChronicleApplication.Commands, c.ChronicleApplication.Queries)
-	routes := gameHttpServer.Routes()
-	return []chi.Router{routes}
+func (c ChronicleService) Routes() map[string][]chi.Router {
+	gameHttpServer := game.NewGameHttpServer(c.ChronicleApplication.Commands.GameCommands, c.ChronicleApplication.Queries.GameQueries)
+	gameRoutes := gameHttpServer.Routes()
+
+	characterHttpServer := character.NewCharacterHttpServer(c.ChronicleApplication.Commands.CharacterCommands, c.ChronicleApplication.Queries.CharacterQueries)
+	characterRoutes := characterHttpServer.Routes()
+
+	return map[string][]chi.Router{
+		"Games":      {gameRoutes},
+		"Characters": {characterRoutes},
+	}
 }
-
-// type Application struct {
-// 	Commands Commands
-// 	Queries  Queries
-// 	Routes   []chi.Router
-// }
-
-// type Commands struct {
-// 	gameApplication.GameCommands
-// }
-
-// type Queries struct {
-// 	gameApplication.GameQueries
-// }

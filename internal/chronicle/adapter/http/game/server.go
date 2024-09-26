@@ -12,7 +12,7 @@ import (
 	"github.com/google/uuid"
 )
 
-func NewGameHttpServer(commands port.ChronicleCommands, queries port.GameQueries) GameHttpServer {
+func NewGameHttpServer(commands port.GameCommands, queries port.GameQueries) GameHttpServer {
 	return GameHttpServer{
 		commands: commands,
 		queries:  queries,
@@ -20,7 +20,7 @@ func NewGameHttpServer(commands port.ChronicleCommands, queries port.GameQueries
 }
 
 type GameHttpServer struct {
-	commands port.ChronicleCommands
+	commands port.GameCommands
 	queries  port.GameQueries
 }
 

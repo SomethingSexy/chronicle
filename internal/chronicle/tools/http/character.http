@@ -1,0 +1,19 @@
+@characterId = a751b19a-ef91-4274-85d2-850569a6ee08
+
+# @name create_character
+
+POST http://localhost:3000/characters
+Content-Type: application/vnd.api+json
+
+{
+    "data": {
+        "type": "characters",
+        "attributes": {
+            "characterId": "{{characterId}}",
+            "name": "Mr. Foo",
+            "description": "I am a big foo."
+        }
+    }
+}
+
+###

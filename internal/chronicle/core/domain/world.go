@@ -10,5 +10,6 @@ type World struct {
 	GameId  uuid.UUID
 	Name    string
 	// Root level locations
-	Locations []Location
+	Locations  []Location
+	Characters []Character
 }

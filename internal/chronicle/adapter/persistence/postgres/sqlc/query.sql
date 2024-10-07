@@ -118,3 +118,8 @@ INSERT INTO world_character (
 )
 ON CONFLICT (world_id, character_id) DO UPDATE SET
   updated_at = EXCLUDED.updated_at;
+
+-- name: GetWorldCharacters :many
+SELECT * FROM character
+JOIN world ON world.world_id = $1
+JOIN world_character ON world_character.world_id = world.id;

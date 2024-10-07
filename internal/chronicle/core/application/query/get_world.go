@@ -29,8 +29,13 @@ func (h getWorldHandler) Handle(ctx context.Context, q worldPort.GetWorldQuery) 
 	if err != nil {
 		return domain.World{}, err
 	}
-
 	world.Locations = locations
+
+	characters, err := h.Persistence.ListCharacters(ctx, q.GameId, q.WorldId)
+	if err != nil {
+		return domain.World{}, err
+	}
+	world.Characters = characters
 
 	return world, nil
 }

@@ -257,3 +257,22 @@ func (g GameQuery) AddCharacterToGameWorld(ctx context.Context, worldId uuid.UUI
 		CreatedAt:        ts,
 	})
 }
+
+func (g GameQuery) ListCharacters(ctx context.Context, gameId uuid.UUID, worldId uuid.UUID) ([]domain.Character, error) {
+	response, err := g.Queries.GetWorldCharacters(ctx, worldId)
+	if err != nil {
+		return nil, err
+	}
+
+	characters := make([]domain.Character, len(response))
+
+	for i, character := range response {
+		characters[i] = domain.Character{
+			CharacterId: character.CharacterID,
+			Name:        character.Name,
+			Description: character.Description.String,
+		}
+	}
+
+	return characters, nil
+}

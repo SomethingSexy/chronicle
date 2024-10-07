@@ -3,6 +3,7 @@ package game
 import (
 	"net/http"
 
+	"github.com/SomethingSexy/chronicle/internal/chronicle/adapter/http/character"
 	corePort "github.com/SomethingSexy/chronicle/internal/chronicle/core/port"
 	"github.com/SomethingSexy/chronicle/internal/chronicle/port"
 	"github.com/SomethingSexy/chronicle/internal/common"
@@ -173,12 +174,23 @@ func (h GameHttpServer) GetWorld(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	characters := make([]*character.CharacterRequest, len(world.Characters))
+	for i, c := range world.Characters {
+		characters[i] = &character.CharacterRequest{
+			ID:          c.CharacterId.String(),
+			CharacterId: c.CharacterId.String(),
+			Name:        c.Name,
+			Description: c.Description,
+		}
+	}
+
 	response := &WorldRequest{
-		ID:        world.WorldId.String(),
-		WorldId:   world.WorldId.String(),
-		GameId:    world.GameId.String(),
-		Name:      world.Name,
-		Locations: locations,
+		ID:         world.WorldId.String(),
+		WorldId:    world.WorldId.String(),
+		GameId:     world.GameId.String(),
+		Name:       world.Name,
+		Locations:  locations,
+		Characters: characters,
 	}
 
 	w.WriteHeader(http.StatusOK)

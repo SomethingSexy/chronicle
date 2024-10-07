@@ -4,16 +4,18 @@ import (
 	"errors"
 	"net/http"
 
+	"github.com/SomethingSexy/chronicle/internal/chronicle/adapter/http/character"
 	"github.com/SomethingSexy/chronicle/internal/chronicle/core/domain"
 	"github.com/google/uuid"
 )
 
 type WorldRequest struct {
-	ID        string             `jsonapi:"primary,worlds"`
-	WorldId   string             `jsonapi:"attr,worldId"`
-	GameId    string             `jsonapi:"attr,gameId"`
-	Name      string             `jsonapi:"attr,name"`
-	Locations []*LocationRequest `jsonapi:"relation,locations"`
+	ID         string                        `jsonapi:"primary,worlds"`
+	WorldId    string                        `jsonapi:"attr,worldId"`
+	GameId     string                        `jsonapi:"attr,gameId"`
+	Name       string                        `jsonapi:"attr,name"`
+	Locations  []*LocationRequest            `jsonapi:"relation,locations"`
+	Characters []*character.CharacterRequest `jsonapi:"relation,characters"`
 }
 
 func (a *WorldRequest) Bind(r *http.Request) error {

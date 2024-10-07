@@ -383,6 +383,72 @@ func (q *Queries) GetWorld(ctx context.Context, id int64) (World, error) {
 	return i, err
 }
 
+const getWorldCharacters = `-- name: GetWorldCharacters :many
+SELECT character.id, character.character_id, character.name, description, character.created_at, character.updated_at, world.id, world.world_id, game_id, world.name, world.created_at, world.updated_at, world_character.id, world_character_id, world_character.character_id, world_character.world_id, world_character.created_at, world_character.updated_at FROM character
+JOIN world ON world.world_id = $1
+JOIN world_character ON world_character.world_id = world.id
+`
+
+type GetWorldCharactersRow struct {
+	ID               int64
+	CharacterID      uuid.UUID
+	Name             string
+	Description      pgtype.Text
+	CreatedAt        pgtype.Timestamptz
+	UpdatedAt        pgtype.Timestamptz
+	ID_2             int64
+	WorldID          uuid.UUID
+	GameID           int64
+	Name_2           string
+	CreatedAt_2      pgtype.Timestamptz
+	UpdatedAt_2      pgtype.Timestamptz
+	ID_3             int64
+	WorldCharacterID uuid.UUID
+	CharacterID_2    int64
+	WorldID_2        int64
+	CreatedAt_3      pgtype.Timestamptz
+	UpdatedAt_3      pgtype.Timestamptz
+}
+
+func (q *Queries) GetWorldCharacters(ctx context.Context, worldID uuid.UUID) ([]GetWorldCharactersRow, error) {
+	rows, err := q.db.Query(ctx, getWorldCharacters, worldID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetWorldCharactersRow
+	for rows.Next() {
+		var i GetWorldCharactersRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.CharacterID,
+			&i.Name,
+			&i.Description,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+			&i.ID_2,
+			&i.WorldID,
+			&i.GameID,
+			&i.Name_2,
+			&i.CreatedAt_2,
+			&i.UpdatedAt_2,
+			&i.ID_3,
+			&i.WorldCharacterID,
+			&i.CharacterID_2,
+			&i.WorldID_2,
+			&i.CreatedAt_3,
+			&i.UpdatedAt_3,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const getWorldFromUuid = `-- name: GetWorldFromUuid :one
 SELECT id, world_id, game_id, name, created_at, updated_at FROM world
 WHERE world_id = $1 LIMIT 1

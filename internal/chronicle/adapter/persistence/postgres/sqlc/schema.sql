@@ -38,7 +38,7 @@ CREATE TABLE location (
 
 create index location_game_id on location(game_id);
 create index location_world_id on location(world_id);
-create index location_path_idx on location using gist (path);
+create index location_path_idx on location using gist(path);
 
 CREATE TABLE character (
   id BIGSERIAL PRIMARY KEY,
@@ -48,3 +48,14 @@ CREATE TABLE character (
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+CREATE TABLE world_character (
+  id BIGSERIAL PRIMARY KEY,
+  world_character_id uuid UNIQUE NOT NULL,
+  character_id BIGSERIAL NOT NULL REFERENCES character(id),
+  world_id BIGSERIAL NOT NULL REFERENCES world(id),
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+create unique index world_character_character_id_world_id_idx on world_character(character_id,world_id);

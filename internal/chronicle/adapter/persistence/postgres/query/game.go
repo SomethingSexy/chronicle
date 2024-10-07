@@ -230,3 +230,30 @@ func (g GameQuery) ListLocations(ctx context.Context, gameId uuid.UUID, worldId 
 
 	return locations, nil
 }
+
+func (g GameQuery) AddCharacterToGameWorld(ctx context.Context, worldId uuid.UUID, characterId uuid.UUID) error {
+	world, err := g.Queries.GetWorldFromUuid(ctx, worldId)
+	if err != nil {
+		return err
+	}
+
+	character, err := g.Queries.GetCharacterFromUuid(ctx, characterId)
+	if err != nil {
+		return err
+	}
+
+	ts := pgtype.Timestamptz{
+		Time:  time.Now(),
+		Valid: true,
+	}
+
+	return g.Queries.AddCharacterToGameWorld(ctx, repository.AddCharacterToGameWorldParams{
+		// Just generating this now for future use but since we are using a unique
+		// index for worldId and characterId, this is probably too important
+		WorldCharacterID: uuid.New(),
+		WorldID:          world.ID,
+		CharacterID:      character.ID,
+		UpdatedAt:        ts,
+		CreatedAt:        ts,
+	})
+}

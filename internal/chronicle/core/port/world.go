@@ -16,3 +16,9 @@ type GetWorldQuery struct {
 	WorldId uuid.UUID
 }
 type GetWorldHandler common.QueryHandler[GetWorldQuery, domain.World]
+
+type AddWorldCharacter struct {
+	WorldId     uuid.UUID
+	CharacterId uuid.UUID
+}
+type AddWorldCharacterHandler common.CommandHandler[AddWorldCharacter]

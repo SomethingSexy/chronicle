@@ -109,3 +109,12 @@ WHERE id = $1 LIMIT 1;
 -- name: GetCharacterFromUuid :one
 SELECT * FROM character
 WHERE character.character_id = $1 LIMIT 1;
+
+-- name: AddCharacterToGameWorld :exec
+INSERT INTO world_character (
+  world_character_id, world_id, character_id, created_at, updated_at
+) VALUES (
+  $1, $2, $3, $4, $5
+)
+ON CONFLICT (world_id, character_id) DO UPDATE SET
+  updated_at = EXCLUDED.updated_at;

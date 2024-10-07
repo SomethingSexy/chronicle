@@ -1,16 +1,5 @@
 CREATE EXTENSION "ltree";
 
--- Create "character" table
-CREATE TABLE "public"."character" (
-  "id" bigserial NOT NULL,
-  "character_id" uuid NOT NULL,
-  "name" text NOT NULL,
-  "description" text NULL,
-  "created_at" timestamptz NOT NULL DEFAULT now(),
-  "updated_at" timestamptz NOT NULL DEFAULT now(),
-  PRIMARY KEY ("id"),
-  CONSTRAINT "character_character_id_key" UNIQUE ("character_id")
-);
 -- Create "game" table
 CREATE TABLE "public"."game" (
   "id" bigserial NOT NULL,
@@ -58,3 +47,29 @@ CREATE INDEX "location_game_id" ON "public"."location" ("game_id");
 CREATE INDEX "location_path_idx" ON "public"."location" USING gist ("path");
 -- Create index "location_world_id" to table: "location"
 CREATE INDEX "location_world_id" ON "public"."location" ("world_id");
+-- Create "character" table
+CREATE TABLE "public"."character" (
+  "id" bigserial NOT NULL,
+  "character_id" uuid NOT NULL,
+  "name" text NOT NULL,
+  "description" text NULL,
+  "created_at" timestamptz NOT NULL DEFAULT now(),
+  "updated_at" timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY ("id"),
+  CONSTRAINT "character_character_id_key" UNIQUE ("character_id")
+);
+-- Create "world_character" table
+CREATE TABLE "public"."world_character" (
+  "id" bigserial NOT NULL,
+  "world_character_id" uuid NOT NULL,
+  "character_id" bigserial NOT NULL,
+  "world_id" bigserial NOT NULL,
+  "created_at" timestamptz NOT NULL DEFAULT now(),
+  "updated_at" timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY ("id"),
+  CONSTRAINT "world_character_world_character_id_key" UNIQUE ("world_character_id"),
+  CONSTRAINT "world_character_character_id_fkey" FOREIGN KEY ("character_id") REFERENCES "public"."character" ("id") ON UPDATE NO ACTION ON DELETE NO ACTION,
+  CONSTRAINT "world_character_world_id_fkey" FOREIGN KEY ("world_id") REFERENCES "public"."world" ("id") ON UPDATE NO ACTION ON DELETE NO ACTION
+);
+-- Create index "world_character_character_id_world_id_idx" to table: "world_character"
+CREATE UNIQUE INDEX "world_character_character_id_world_id_idx" ON "public"."world_character" ("character_id", "world_id");

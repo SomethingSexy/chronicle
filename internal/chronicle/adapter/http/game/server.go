@@ -36,8 +36,11 @@ func (h GameHttpServer) Routes() chi.Router {
 	// relationships to root routes.
 	r.Post("/{gameId}/worlds", h.CreateWorld)
 	r.Get("/{gameId}/worlds/{worldId}", h.GetWorld)
+	// TODO: This should probably be relationships?
 	r.Post("/{gameId}/worlds/{worldId}/locations", h.CreateLocation)
 	r.Get("/{gameId}/worlds/{worldId}/locations", h.GetLocations)
+
+	r.Post("/{gameId}/worlds/{worldId}/relationships/characters", h.AddWorldCharacter)
 
 	return r
 }
@@ -241,4 +244,24 @@ func (h GameHttpServer) GetLocations(w http.ResponseWriter, r *http.Request) {
 		render.Render(w, r, common.ErrInvalidRequest(err))
 		return
 	}
+}
+
+func (h GameHttpServer) AddWorldCharacter(w http.ResponseWriter, r *http.Request) {
+	worldId := chi.URLParam(r, "worldId")
+	data := &WorldCharacterRequest{}
+	if err := render.Bind(r, data); err != nil {
+		render.Render(w, r, common.ErrInvalidRequest(err))
+		return
+	}
+
+	if err := h.commands.AddWorldCharacter.Handle(r.Context(), corePort.AddWorldCharacter{
+		// TODO: Bad check for error
+		WorldId:     uuid.MustParse(worldId),
+		CharacterId: data.ToDomain(),
+	}); err != nil {
+		render.Render(w, r, common.ErrInvalidRequest(err))
+		return
+	}
+
+	render.Status(r, http.StatusCreated)
 }

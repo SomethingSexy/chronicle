@@ -47,3 +47,12 @@ type World struct {
 	CreatedAt pgtype.Timestamptz
 	UpdatedAt pgtype.Timestamptz
 }
+
+type WorldCharacter struct {
+	ID               int64
+	WorldCharacterID uuid.UUID
+	CharacterID      int64
+	WorldID          int64
+	CreatedAt        pgtype.Timestamptz
+	UpdatedAt        pgtype.Timestamptz
+}

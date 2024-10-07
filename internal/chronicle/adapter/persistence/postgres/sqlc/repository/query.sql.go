@@ -12,6 +12,35 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+const addCharacterToGameWorld = `-- name: AddCharacterToGameWorld :exec
+INSERT INTO world_character (
+  world_character_id, world_id, character_id, created_at, updated_at
+) VALUES (
+  $1, $2, $3, $4, $5
+)
+ON CONFLICT (world_id, character_id) DO UPDATE SET
+  updated_at = EXCLUDED.updated_at
+`
+
+type AddCharacterToGameWorldParams struct {
+	WorldCharacterID uuid.UUID
+	WorldID          int64
+	CharacterID      int64
+	CreatedAt        pgtype.Timestamptz
+	UpdatedAt        pgtype.Timestamptz
+}
+
+func (q *Queries) AddCharacterToGameWorld(ctx context.Context, arg AddCharacterToGameWorldParams) error {
+	_, err := q.db.Exec(ctx, addCharacterToGameWorld,
+		arg.WorldCharacterID,
+		arg.WorldID,
+		arg.CharacterID,
+		arg.CreatedAt,
+		arg.UpdatedAt,
+	)
+	return err
+}
+
 const createCharacter = `-- name: CreateCharacter :one
 INSERT INTO character (
   character_id, name, description, created_at, updated_at

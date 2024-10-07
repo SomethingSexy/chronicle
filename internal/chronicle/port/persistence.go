@@ -25,6 +25,8 @@ type GamePersistence interface {
 
 	CreateLocation(ct context.Context, location domain.Location) (domain.Location, error)
 	ListLocations(ctx context.Context, gameId uuid.UUID, worldId uuid.UUID) ([]domain.Location, error)
+
+	AddCharacterToGameWorld(ctx context.Context, worldId uuid.UUID, characterId uuid.UUID) error
 }
 
 type CharacterPersistence interface {

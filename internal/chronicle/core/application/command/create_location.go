@@ -9,14 +9,14 @@ import (
 	"github.com/SomethingSexy/chronicle/internal/common"
 )
 
-func NewCreateLocationCommand(persistence port.GamePersistence) common.CommandHandler[gamePort.CreateLocation] {
+func NewCreateLocationCommand(persistence port.WorldPersistence) common.CommandHandler[gamePort.CreateLocation] {
 	return createLocationHandler{
 		Persistence: persistence,
 	}
 }
 
 type createLocationHandler struct {
-	Persistence port.GamePersistence
+	Persistence port.WorldPersistence
 }
 
 func (c createLocationHandler) Handle(ctx context.Context, cmd gamePort.CreateLocation) error {

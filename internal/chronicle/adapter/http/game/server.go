@@ -37,11 +37,15 @@ func (h GameHttpServer) Routes() chi.Router {
 	// relationships to root routes.
 	r.Post("/{gameId}/worlds", h.CreateWorld)
 	r.Get("/{gameId}/worlds/{worldId}", h.GetWorld)
+
 	// TODO: This should probably be relationships?
 	r.Post("/{gameId}/worlds/{worldId}/locations", h.CreateLocation)
 	r.Get("/{gameId}/worlds/{worldId}/locations", h.GetLocations)
 
 	r.Post("/{gameId}/worlds/{worldId}/relationships/characters", h.AddWorldCharacter)
+	// Using this format right now for patching a character that has been linked to a world
+	// This might not be correct and instead it could include "world-characters"
+	r.Patch("/{gameId}/worlds/{worldId}/characters/{characterId}", h.AddWorldCharacter)
 
 	return r
 }
@@ -260,7 +264,7 @@ func (h GameHttpServer) GetLocations(w http.ResponseWriter, r *http.Request) {
 
 func (h GameHttpServer) AddWorldCharacter(w http.ResponseWriter, r *http.Request) {
 	worldId := chi.URLParam(r, "worldId")
-	data := &WorldCharacterRequest{}
+	data := &AddWorldCharacterRequest{}
 	if err := render.Bind(r, data); err != nil {
 		render.Render(w, r, common.ErrInvalidRequest(err))
 		return

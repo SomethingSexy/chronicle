@@ -9,9 +9,9 @@ import (
 func NewApplication(persistence port.Persistence) port.ChronicleApplication {
 	gameCommands := port.GameCommands{
 		CreateGame:        command.NewCreateGameCommand(persistence.Game),
-		CreateWorld:       command.NewCreateWorldCommand(persistence.Game),
-		CreateLocation:    command.NewCreateLocationCommand(persistence.Game),
-		AddWorldCharacter: command.NewAddWorldCharacterCommand(persistence.Game),
+		CreateWorld:       command.NewCreateWorldCommand(persistence.World),
+		CreateLocation:    command.NewCreateLocationCommand(persistence.World),
+		AddWorldCharacter: command.NewAddWorldCharacterCommand(persistence.World),
 	}
 
 	characterCommands := port.CharacterCommands{
@@ -21,8 +21,8 @@ func NewApplication(persistence port.Persistence) port.ChronicleApplication {
 	gameQueries := port.GameQueries{
 		ListGames:     query.NewListGamesHandler(persistence.Game),
 		GetGame:       query.NewGetGameHandler(persistence.Game),
-		ListLocations: query.NewListLocationsHandler(persistence.Game),
-		GetWorld:      query.NewGetWorldHandler(persistence.Game),
+		ListLocations: query.NewListLocationsHandler(persistence.World),
+		GetWorld:      query.NewGetWorldHandler(persistence.World),
 	}
 
 	characterQueries := port.CharacterQueries{}

@@ -9,14 +9,14 @@ import (
 	"github.com/SomethingSexy/chronicle/internal/common"
 )
 
-func NewAddWorldCharacterCommand(persistence port.GamePersistence) common.CommandHandler[corePort.AddWorldCharacter] {
+func NewAddWorldCharacterCommand(persistence port.WorldPersistence) common.CommandHandler[corePort.AddWorldCharacter] {
 	return addWorldCharacterHandler{
 		Persistence: persistence,
 	}
 }
 
 type addWorldCharacterHandler struct {
-	Persistence port.GamePersistence
+	Persistence port.WorldPersistence
 }
 
 // Adds a character to a world.  Further handling is created to update information about that link

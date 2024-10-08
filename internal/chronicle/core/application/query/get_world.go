@@ -8,14 +8,14 @@ import (
 	"github.com/SomethingSexy/chronicle/internal/chronicle/port"
 )
 
-func NewGetWorldHandler(persistence port.GamePersistence) worldPort.GetWorldHandler {
+func NewGetWorldHandler(persistence port.WorldPersistence) worldPort.GetWorldHandler {
 	return getWorldHandler{
 		Persistence: persistence,
 	}
 }
 
 type getWorldHandler struct {
-	Persistence port.GamePersistence
+	Persistence port.WorldPersistence
 }
 
 func (h getWorldHandler) Handle(ctx context.Context, q worldPort.GetWorldQuery) (domain.World, error) {

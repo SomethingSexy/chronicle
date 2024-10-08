@@ -9,14 +9,14 @@ import (
 	"github.com/SomethingSexy/chronicle/internal/common"
 )
 
-func NewCreateWorldCommand(persistence port.GamePersistence) common.CommandHandler[gamePort.CreateWorld] {
+func NewCreateWorldCommand(persistence port.WorldPersistence) common.CommandHandler[gamePort.CreateWorld] {
 	return createWorldHandler{
 		Persistence: persistence,
 	}
 }
 
 type createWorldHandler struct {
-	Persistence port.GamePersistence
+	Persistence port.WorldPersistence
 }
 
 func (c createWorldHandler) Handle(ctx context.Context, cmd gamePort.CreateWorld) error {

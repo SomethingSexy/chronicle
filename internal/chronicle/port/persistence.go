@@ -12,6 +12,7 @@ import (
 type Persistence struct {
 	Game      GamePersistence
 	Character CharacterPersistence
+	World     WorldPersistence
 }
 
 type GamePersistence interface {
@@ -20,6 +21,13 @@ type GamePersistence interface {
 	GetGame(ctx context.Context, id uuid.UUID) (domain.Game, error)
 	// TODO: This should turn into a ListWorlds with a filter by gameId
 	GetGameWorlds(ctx context.Context, gameId uuid.UUID) ([]domain.World, error)
+}
+
+type CharacterPersistence interface {
+	CreateCharacter(ctx context.Context, character domain.Character) (domain.Character, error)
+}
+
+type WorldPersistence interface {
 	CreateWorld(ctx context.Context, world domain.World) (domain.World, error)
 	GetWorld(ctx context.Context, gameId uuid.UUID, worldId uuid.UUID) (domain.World, error)
 
@@ -28,8 +36,4 @@ type GamePersistence interface {
 
 	ListCharacters(ctx context.Context, gameId uuid.UUID, worldId uuid.UUID) ([]domain.Character, error)
 	AddCharacterToGameWorld(ctx context.Context, worldId uuid.UUID, characterId uuid.UUID) error
-}
-
-type CharacterPersistence interface {
-	CreateCharacter(ctx context.Context, character domain.Character) (domain.Character, error)
 }

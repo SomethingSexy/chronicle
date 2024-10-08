@@ -22,3 +22,9 @@ type AddWorldCharacter struct {
 	CharacterId uuid.UUID
 }
 type AddWorldCharacterHandler common.CommandHandler[AddWorldCharacter]
+
+type UpdateWorldCharacter struct {
+	WorldId        uuid.UUID
+	CharacterId    uuid.UUID
+	WorldCharacter domain.WorldCharacter
+}

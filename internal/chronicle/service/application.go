@@ -31,6 +31,7 @@ func NewService() {
 	persistence := port.Persistence{
 		Game:      query.NewGameQuery(q),
 		Character: query.NewCharacterQuery(q),
+		World:     query.NewWorldQuery(q),
 	}
 
 	app := application.NewApplication(persistence)

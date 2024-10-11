@@ -148,13 +148,13 @@ func (g WorldQuery) ListLocations(ctx context.Context, gameId uuid.UUID, worldId
 	return locations, nil
 }
 
-func (g WorldQuery) AddCharacterToGameWorld(ctx context.Context, worldId uuid.UUID, characterId uuid.UUID) error {
+func (g WorldQuery) UpsertCharacterToGameWorld(ctx context.Context, worldId uuid.UUID, characterId uuid.UUID, character *domain.WorldCharacter) error {
 	world, err := g.Queries.GetWorldFromUuid(ctx, worldId)
 	if err != nil {
 		return err
 	}
 
-	character, err := g.Queries.GetCharacterFromUuid(ctx, characterId)
+	existingCharacter, err := g.Queries.GetCharacterFromUuid(ctx, characterId)
 	if err != nil {
 		return err
 	}
@@ -164,15 +164,24 @@ func (g WorldQuery) AddCharacterToGameWorld(ctx context.Context, worldId uuid.UU
 		Valid: true,
 	}
 
-	return g.Queries.AddCharacterToGameWorld(ctx, repository.AddCharacterToGameWorldParams{
+	requestArgs := repository.UpsertCharacterToGameWorldParams{
 		// Just generating this now for future use but since we are using a unique
 		// index for worldId and characterId, this is probably too important
 		WorldCharacterID: uuid.New(),
 		WorldID:          world.ID,
-		CharacterID:      character.ID,
+		CharacterID:      existingCharacter.ID,
 		UpdatedAt:        ts,
 		CreatedAt:        ts,
-	})
+	}
+
+	if character != nil {
+		requestArgs.CharacterType = pgtype.Text{
+			Valid:  true,
+			String: character.Type.String(),
+		}
+	}
+
+	return g.Queries.UpsertCharacterToGameWorld(ctx, requestArgs)
 }
 
 func (g WorldQuery) ListCharacters(ctx context.Context, gameId uuid.UUID, worldId uuid.UUID) ([]domain.Character, error) {

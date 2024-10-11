@@ -4,6 +4,7 @@ import (
 	"context"
 	"log"
 
+	"github.com/SomethingSexy/chronicle/internal/chronicle/core/domain"
 	corePort "github.com/SomethingSexy/chronicle/internal/chronicle/core/port"
 	"github.com/SomethingSexy/chronicle/internal/chronicle/port"
 	"github.com/SomethingSexy/chronicle/internal/common"
@@ -23,5 +24,7 @@ type updateWorldCharacterHandler struct {
 func (c updateWorldCharacterHandler) Handle(ctx context.Context, cmd corePort.UpdateWorldCharacter) error {
 	log.Printf("Patching character %s to world %s", cmd.CharacterId, cmd.WorldId)
 
-	return c.Persistence.AddCharacterToGameWorld(ctx, cmd.WorldId, cmd.CharacterId)
+	return c.Persistence.UpsertCharacterToGameWorld(ctx, cmd.WorldId, cmd.CharacterId, &domain.WorldCharacter{
+		Type: cmd.WorldCharacter.Type,
+	})
 }

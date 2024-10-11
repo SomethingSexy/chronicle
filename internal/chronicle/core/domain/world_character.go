@@ -2,9 +2,9 @@ package domain
 
 func NewCharacterType(t string) CharacterType {
 	switch t {
-	case "NPC":
+	case "npc":
 		return NPC
-	case "PC":
+	case "pc":
 		return PC
 	}
 
@@ -19,7 +19,7 @@ const (
 )
 
 func (t CharacterType) String() string {
-	return [...]string{"NPC", "PC"}[t-1]
+	return [...]string{"npc", "pc"}[t-1]
 }
 
 // Represents a character that has been added to a world

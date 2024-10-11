@@ -9,6 +9,29 @@ import (
 	"github.com/google/uuid"
 )
 
+func NewWorldRequest(w domain.World) WorldRequest {
+	locations := make([]*LocationRequest, len(w.Locations))
+	for i, location := range w.Locations {
+		locationRequest := NewLocationRequest(location)
+		locations[i] = &locationRequest
+	}
+
+	characters := make([]*character.CharacterRequest, len(w.Characters))
+	for i, c := range w.Characters {
+		characterRequest := character.NewCharacterRequest(c)
+		characters[i] = &characterRequest
+	}
+
+	return WorldRequest{
+		ID:         w.WorldId.String(),
+		WorldId:    w.WorldId.String(),
+		GameId:     w.GameId.String(),
+		Name:       w.Name,
+		Locations:  locations,
+		Characters: characters,
+	}
+}
+
 type WorldRequest struct {
 	ID         string                        `jsonapi:"primary,worlds"`
 	WorldId    string                        `jsonapi:"attr,worldId"`

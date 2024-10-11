@@ -19,8 +19,8 @@ func NewApplication(persistence port.Persistence) port.ChronicleApplication {
 	}
 
 	gameQueries := port.GameQueries{
-		ListGames:     query.NewListGamesHandler(persistence.Game),
-		GetGame:       query.NewGetGameHandler(persistence.Game),
+		ListGames:     query.NewListGamesHandler(persistence),
+		GetGame:       query.NewGetGameHandler(persistence),
 		ListLocations: query.NewListLocationsHandler(persistence.World),
 		GetWorld:      query.NewGetWorldHandler(persistence.World),
 	}

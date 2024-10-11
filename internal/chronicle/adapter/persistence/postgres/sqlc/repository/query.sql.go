@@ -12,35 +12,6 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
-const addCharacterToGameWorld = `-- name: AddCharacterToGameWorld :exec
-INSERT INTO world_character (
-  world_character_id, world_id, character_id, created_at, updated_at
-) VALUES (
-  $1, $2, $3, $4, $5
-)
-ON CONFLICT (world_id, character_id) DO UPDATE SET
-  updated_at = EXCLUDED.updated_at
-`
-
-type AddCharacterToGameWorldParams struct {
-	WorldCharacterID uuid.UUID
-	WorldID          int64
-	CharacterID      int64
-	CreatedAt        pgtype.Timestamptz
-	UpdatedAt        pgtype.Timestamptz
-}
-
-func (q *Queries) AddCharacterToGameWorld(ctx context.Context, arg AddCharacterToGameWorldParams) error {
-	_, err := q.db.Exec(ctx, addCharacterToGameWorld,
-		arg.WorldCharacterID,
-		arg.WorldID,
-		arg.CharacterID,
-		arg.CreatedAt,
-		arg.UpdatedAt,
-	)
-	return err
-}
-
 const createCharacter = `-- name: CreateCharacter :one
 INSERT INTO character (
   character_id, name, description, created_at, updated_at
@@ -384,7 +355,7 @@ func (q *Queries) GetWorld(ctx context.Context, id int64) (World, error) {
 }
 
 const getWorldCharacters = `-- name: GetWorldCharacters :many
-SELECT character.id, character.character_id, character.name, description, character.created_at, character.updated_at, world.id, world.world_id, game_id, world.name, world.created_at, world.updated_at, world_character.id, world_character_id, world_character.character_id, world_character.world_id, world_character.created_at, world_character.updated_at FROM character
+SELECT character.id, character.character_id, character.name, description, character.created_at, character.updated_at, world.id, world.world_id, game_id, world.name, world.created_at, world.updated_at, world_character.id, world_character_id, world_character.character_id, world_character.world_id, character_type, world_character.created_at, world_character.updated_at FROM character
 JOIN world ON world.world_id = $1
 JOIN world_character ON world_character.world_id = world.id
 `
@@ -406,6 +377,7 @@ type GetWorldCharactersRow struct {
 	WorldCharacterID uuid.UUID
 	CharacterID_2    int64
 	WorldID_2        int64
+	CharacterType    pgtype.Text
 	CreatedAt_3      pgtype.Timestamptz
 	UpdatedAt_3      pgtype.Timestamptz
 }
@@ -436,6 +408,7 @@ func (q *Queries) GetWorldCharacters(ctx context.Context, worldID uuid.UUID) ([]
 			&i.WorldCharacterID,
 			&i.CharacterID_2,
 			&i.WorldID_2,
+			&i.CharacterType,
 			&i.CreatedAt_3,
 			&i.UpdatedAt_3,
 		); err != nil {
@@ -649,5 +622,37 @@ type UpdateWorldParams struct {
 
 func (q *Queries) UpdateWorld(ctx context.Context, arg UpdateWorldParams) error {
 	_, err := q.db.Exec(ctx, updateWorld, arg.WorldID, arg.Name)
+	return err
+}
+
+const upsertCharacterToGameWorld = `-- name: UpsertCharacterToGameWorld :exec
+INSERT INTO world_character (
+  world_character_id, world_id, character_id, character_type, created_at, updated_at
+) VALUES (
+  $1, $2, $3, $4, $5, $6
+)
+ON CONFLICT (world_id, character_id) DO UPDATE SET
+  character_type = EXCLUDED.character_type,
+  updated_at = EXCLUDED.updated_at
+`
+
+type UpsertCharacterToGameWorldParams struct {
+	WorldCharacterID uuid.UUID
+	WorldID          int64
+	CharacterID      int64
+	CharacterType    pgtype.Text
+	CreatedAt        pgtype.Timestamptz
+	UpdatedAt        pgtype.Timestamptz
+}
+
+func (q *Queries) UpsertCharacterToGameWorld(ctx context.Context, arg UpsertCharacterToGameWorldParams) error {
+	_, err := q.db.Exec(ctx, upsertCharacterToGameWorld,
+		arg.WorldCharacterID,
+		arg.WorldID,
+		arg.CharacterID,
+		arg.CharacterType,
+		arg.CreatedAt,
+		arg.UpdatedAt,
+	)
 	return err
 }

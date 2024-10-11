@@ -64,6 +64,7 @@ CREATE TABLE "public"."world_character" (
   "world_character_id" uuid NOT NULL,
   "character_id" bigserial NOT NULL,
   "world_id" bigserial NOT NULL,
+  "character_type" text NULL,
   "created_at" timestamptz NOT NULL DEFAULT now(),
   "updated_at" timestamptz NOT NULL DEFAULT now(),
   PRIMARY KEY ("id"),

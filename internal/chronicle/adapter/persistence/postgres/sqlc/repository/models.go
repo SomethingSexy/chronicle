@@ -53,6 +53,7 @@ type WorldCharacter struct {
 	WorldCharacterID uuid.UUID
 	CharacterID      int64
 	WorldID          int64
+	CharacterType    pgtype.Text
 	CreatedAt        pgtype.Timestamptz
 	UpdatedAt        pgtype.Timestamptz
 }

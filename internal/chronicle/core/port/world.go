@@ -28,3 +28,4 @@ type UpdateWorldCharacter struct {
 	CharacterId    uuid.UUID
 	WorldCharacter domain.WorldCharacter
 }
+type UpdateWorldCharacterHandler common.CommandHandler[UpdateWorldCharacter]

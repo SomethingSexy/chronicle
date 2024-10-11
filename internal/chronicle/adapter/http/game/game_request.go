@@ -8,6 +8,22 @@ import (
 	"github.com/google/uuid"
 )
 
+func NewGameRequest(g domain.Game) GameRequest {
+	worlds := make([]*WorldRequest, len(g.Worlds))
+	for x, world := range g.Worlds {
+		worldRquest := NewWorldRequest(world)
+		worlds[x] = &worldRquest
+	}
+
+	return GameRequest{
+		ID:     g.GameId.String(),
+		GameId: g.GameId.String(),
+		Name:   g.Name,
+		Type:   g.Type,
+		Worlds: worlds,
+	}
+}
+
 type GameRequest struct {
 	ID     string          `jsonapi:"primary,games"`
 	GameId string          `jsonapi:"attr,gameId"`

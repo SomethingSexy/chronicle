@@ -8,6 +8,22 @@ import (
 	"github.com/google/uuid"
 )
 
+func NewLocationRequest(l domain.Location) LocationRequest {
+	paths := make([]string, len(l.Path))
+	for x, path := range l.Path {
+		paths[x] = path.String()
+	}
+
+	return LocationRequest{
+		ID:         l.LocationId.String(),
+		LocationId: l.LocationId.String(),
+		WorldId:    l.WorldId.String(),
+		Name:       l.Name,
+		Type:       l.Type,
+		Path:       paths,
+	}
+}
+
 type LocationRequest struct {
 	ID         string   `jsonapi:"primary,locations"`
 	LocationId string   `jsonapi:"attr,locationId"`

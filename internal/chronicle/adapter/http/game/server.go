@@ -3,7 +3,6 @@ package game
 import (
 	"net/http"
 
-	"github.com/SomethingSexy/chronicle/internal/chronicle/adapter/http/character"
 	corePort "github.com/SomethingSexy/chronicle/internal/chronicle/core/port"
 	"github.com/SomethingSexy/chronicle/internal/chronicle/port"
 	"github.com/SomethingSexy/chronicle/internal/common"
@@ -76,23 +75,8 @@ func (h GameHttpServer) ListGames(w http.ResponseWriter, r *http.Request) {
 
 	responses := make([]*GameRequest, len(games))
 	for i, game := range games {
-		worlds := make([]*WorldRequest, len(game.Worlds))
-
-		for x, world := range game.Worlds {
-			worlds[x] = &WorldRequest{
-				ID:      world.WorldId.String(),
-				WorldId: world.WorldId.String(),
-				GameId:  world.GameId.String(),
-				Name:    world.Name,
-			}
-		}
-		responses[i] = &GameRequest{
-			ID:     game.GameId.String(),
-			GameId: game.GameId.String(),
-			Name:   game.Name,
-			Type:   game.Type,
-			Worlds: worlds,
-		}
+		gameRequest := NewGameRequest((game))
+		responses[i] = &gameRequest
 	}
 
 	w.WriteHeader(http.StatusOK)
@@ -115,16 +99,11 @@ func (h GameHttpServer) GetGame(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := &GameRequest{
-		ID:     game.GameId.String(),
-		GameId: game.GameId.String(),
-		Name:   game.Name,
-		Type:   game.Type,
-	}
+	gameRequest := NewGameRequest((game))
 
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", jsonapi.MediaType)
-	if err := jsonapi.MarshalPayload(w, response); err != nil {
+	if err := jsonapi.MarshalPayload(w, &gameRequest); err != nil {
 		render.Render(w, r, common.ErrInvalidRequest(err))
 		return
 	}
@@ -161,45 +140,11 @@ func (h GameHttpServer) GetWorld(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	locations := make([]*LocationRequest, len(world.Locations))
-	for i, location := range world.Locations {
-		paths := make([]string, len(location.Path))
-		for x, path := range location.Path {
-			paths[x] = path.String()
-		}
-
-		locations[i] = &LocationRequest{
-			ID:         location.LocationId.String(),
-			LocationId: location.LocationId.String(),
-			WorldId:    location.WorldId.String(),
-			Name:       location.Name,
-			Type:       location.Type,
-			Path:       paths,
-		}
-	}
-
-	characters := make([]*character.CharacterRequest, len(world.Characters))
-	for i, c := range world.Characters {
-		characters[i] = &character.CharacterRequest{
-			ID:          c.CharacterId.String(),
-			CharacterId: c.CharacterId.String(),
-			Name:        c.Name,
-			Description: c.Description,
-		}
-	}
-
-	response := &WorldRequest{
-		ID:         world.WorldId.String(),
-		WorldId:    world.WorldId.String(),
-		GameId:     world.GameId.String(),
-		Name:       world.Name,
-		Locations:  locations,
-		Characters: characters,
-	}
+	worldRquest := NewWorldRequest(world)
 
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", jsonapi.MediaType)
-	if err := jsonapi.MarshalPayload(w, response); err != nil {
+	if err := jsonapi.MarshalPayload(w, &worldRquest); err != nil {
 		render.Render(w, r, common.ErrInvalidRequest(err))
 		return
 	}
@@ -237,21 +182,9 @@ func (h GameHttpServer) GetLocations(w http.ResponseWriter, r *http.Request) {
 	}
 
 	responses := make([]*LocationRequest, len(locations))
-
 	for i, location := range locations {
-		paths := make([]string, len(location.Path))
-		for x, path := range location.Path {
-			paths[x] = path.String()
-		}
-
-		responses[i] = &LocationRequest{
-			ID:         location.LocationId.String(),
-			LocationId: location.LocationId.String(),
-			WorldId:    location.WorldId.String(),
-			Name:       location.Name,
-			Type:       location.Type,
-			Path:       paths,
-		}
+		locationRequest := NewLocationRequest(location)
+		responses[i] = &locationRequest
 	}
 
 	w.WriteHeader(http.StatusOK)

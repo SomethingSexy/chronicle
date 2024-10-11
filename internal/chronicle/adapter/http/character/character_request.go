@@ -8,6 +8,15 @@ import (
 	"github.com/google/uuid"
 )
 
+func NewCharacterRequest(c domain.Character) CharacterRequest {
+	return CharacterRequest{
+		ID:          c.CharacterId.String(),
+		CharacterId: c.CharacterId.String(),
+		Name:        c.Name,
+		Description: c.Description,
+	}
+}
+
 type CharacterRequest struct {
 	ID          string `jsonapi:"primary,characters"`
 	CharacterId string `jsonapi:"attr,characterId"`

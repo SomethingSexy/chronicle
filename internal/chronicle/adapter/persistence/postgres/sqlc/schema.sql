@@ -54,6 +54,7 @@ CREATE TABLE world_character (
   world_character_id uuid UNIQUE NOT NULL,
   character_id BIGSERIAL NOT NULL REFERENCES character(id),
   world_id BIGSERIAL NOT NULL REFERENCES world(id),
+  character_type text,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

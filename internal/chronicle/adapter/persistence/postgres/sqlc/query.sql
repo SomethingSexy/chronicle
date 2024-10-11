@@ -110,13 +110,14 @@ WHERE id = $1 LIMIT 1;
 SELECT * FROM character
 WHERE character.character_id = $1 LIMIT 1;
 
--- name: AddCharacterToGameWorld :exec
+-- name: UpsertCharacterToGameWorld :exec
 INSERT INTO world_character (
-  world_character_id, world_id, character_id, created_at, updated_at
+  world_character_id, world_id, character_id, character_type, created_at, updated_at
 ) VALUES (
-  $1, $2, $3, $4, $5
+  $1, $2, $3, $4, $5, $6
 )
 ON CONFLICT (world_id, character_id) DO UPDATE SET
+  character_type = EXCLUDED.character_type,
   updated_at = EXCLUDED.updated_at;
 
 -- name: GetWorldCharacters :many

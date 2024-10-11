@@ -23,6 +23,11 @@ Content-Type: application/vnd.api+json
 
 ###
 
+# @name get_game
+GET http://localhost:3000/games/{{gameId}}
+Content-Type: application/vnd.api+json
+
+###
 
 # @name create_world
 POST http://localhost:3000/games/{{gameId}}/worlds

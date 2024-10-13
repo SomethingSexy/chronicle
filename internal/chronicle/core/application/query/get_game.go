@@ -24,20 +24,18 @@ func (h getGameHandler) Handle(ctx context.Context, q gamePort.GetGameQuery) (do
 		return domain.Game{}, err
 	}
 
-	worlds, err := h.Persistence.Game.GetGameWorlds(ctx, game.GameId)
+	world, err := h.Persistence.Game.GetGameWorld(ctx, game.GameId)
 	if err != nil {
 		return domain.Game{}, err
 	}
 
-	for x := 0; x < len(worlds); x++ {
-		characters, err := h.Persistence.World.ListCharacters(ctx, worlds[x].GameId, worlds[x].WorldId)
-		if err != nil {
-			return domain.Game{}, err
-		}
-		worlds[x].Characters = characters
+	characters, err := h.Persistence.World.ListCharacters(ctx, world.WorldId)
+	if err != nil {
+		return domain.Game{}, err
 	}
+	world.Characters = characters
 
-	game.Worlds = worlds
+	game.World = world
 
 	return game, nil
 }

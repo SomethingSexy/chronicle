@@ -1,16 +1,18 @@
 package domain
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+)
 
 func NewGameType(t string) GameType {
 	switch t {
 	case "vtm":
-		return NPC
+		return VTM
 	case "generic":
-		return PC
+		return Generic
 	}
 
-	return NPC
+	return Generic
 }
 
 // There will more than likely need to be a much more robust
@@ -26,12 +28,13 @@ const (
 )
 
 func (t GameType) String() string {
-	return [...]string{"generic", "vtm"}[t-1]
+	return [...]string{"generic", "vtm"}[t]
 }
 
 type Game struct {
-	GameId uuid.UUID
-	Name   string
-	Type   GameType
-	Worlds []World
+	GameId  uuid.UUID
+	WorldId uuid.UUID
+	Name    string
+	Type    GameType
+	World   World
 }

@@ -13,24 +13,35 @@ type ChronicleApplication struct {
 type ChronicleCommands struct {
 	GameCommands
 	CharacterCommands
+	WorldCommands
 }
 
 type ChronicleQueries struct {
 	GameQueries
 	CharacterQueries
+	WorldQueries
 }
 
 type GameCommands struct {
 	CreateGame        corePort.CreateGameHander
-	CreateWorld       corePort.CreateWorldHander
 	CreateLocation    corePort.CreateLocationHander
 	AddWorldCharacter corePort.AddWorldCharacterHandler
 }
 
 type GameQueries struct {
+	GetGame   corePort.GetGameHandler
+	ListGames corePort.ListGamesHandler
+}
+
+type WorldCommands struct {
+	CreateWorld       corePort.CreateWorldHander
+	CreateLocation    corePort.CreateLocationHander
+	AddWorldCharacter corePort.AddWorldCharacterHandler
+}
+
+type WorldQueries struct {
 	GetGame       corePort.GetGameHandler
 	GetWorld      corePort.GetWorldHandler
-	ListGames     corePort.ListGamesHandler
 	ListLocations corePort.ListLocationsHandler
 }
 

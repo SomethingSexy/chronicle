@@ -8,10 +8,7 @@ import (
 
 func NewApplication(persistence port.Persistence) port.ChronicleApplication {
 	gameCommands := port.GameCommands{
-		CreateGame:        command.NewCreateGameCommand(persistence.Game),
-		CreateWorld:       command.NewCreateWorldCommand(persistence.World),
-		CreateLocation:    command.NewCreateLocationCommand(persistence.World),
-		AddWorldCharacter: command.NewAddWorldCharacterCommand(persistence.World),
+		CreateGame: command.NewCreateGameCommand(persistence.Game),
 	}
 
 	characterCommands := port.CharacterCommands{
@@ -19,17 +16,30 @@ func NewApplication(persistence port.Persistence) port.ChronicleApplication {
 	}
 
 	gameQueries := port.GameQueries{
-		ListGames:     query.NewListGamesHandler(persistence),
-		GetGame:       query.NewGetGameHandler(persistence),
-		ListLocations: query.NewListLocationsHandler(persistence.World),
-		GetWorld:      query.NewGetWorldHandler(persistence.World),
+		ListGames: query.NewListGamesHandler(persistence),
+		GetGame:   query.NewGetGameHandler(persistence),
 	}
 
 	characterQueries := port.CharacterQueries{}
 
+	worldQueries := port.WorldQueries{
+		ListLocations: query.NewListLocationsHandler(persistence.World),
+		GetWorld:      query.NewGetWorldHandler(persistence.World),
+	}
+
+	worldCommands := port.WorldCommands{
+		CreateWorld:       command.NewCreateWorldCommand(persistence.World),
+		CreateLocation:    command.NewCreateLocationCommand(persistence.World),
+		AddWorldCharacter: command.NewAddWorldCharacterCommand(persistence.World),
+	}
+
 	return port.ChronicleApplication{
-		Commands:    port.ChronicleCommands{GameCommands: gameCommands, CharacterCommands: characterCommands},
-		Queries:     port.ChronicleQueries{GameQueries: gameQueries, CharacterQueries: characterQueries},
+		Commands: port.ChronicleCommands{
+			GameCommands: gameCommands, CharacterCommands: characterCommands, WorldCommands: worldCommands,
+		},
+		Queries: port.ChronicleQueries{
+			GameQueries: gameQueries, CharacterQueries: characterQueries, WorldQueries: worldQueries,
+		},
 		Persistence: persistence,
 	}
 }

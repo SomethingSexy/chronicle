@@ -1,4 +1,4 @@
-package game
+package world
 
 import (
 	"errors"
@@ -25,7 +25,6 @@ func NewWorldRequest(w domain.World) WorldRequest {
 	return WorldRequest{
 		ID:         w.WorldId.String(),
 		WorldId:    w.WorldId.String(),
-		GameId:     w.GameId.String(),
 		Name:       w.Name,
 		Locations:  locations,
 		Characters: characters,
@@ -35,7 +34,6 @@ func NewWorldRequest(w domain.World) WorldRequest {
 type WorldRequest struct {
 	ID         string                        `jsonapi:"primary,worlds"`
 	WorldId    string                        `jsonapi:"attr,worldId"`
-	GameId     string                        `jsonapi:"attr,gameId"`
 	Name       string                        `jsonapi:"attr,name"`
 	Locations  []*LocationRequest            `jsonapi:"relation,locations"`
 	Characters []*character.CharacterRequest `jsonapi:"relation,characters"`
@@ -44,10 +42,6 @@ type WorldRequest struct {
 func (a *WorldRequest) Bind(r *http.Request) error {
 	if a.Name == "" {
 		return errors.New("missing required game fields")
-	}
-
-	if _, err := uuid.Parse(a.GameId); err != nil {
-		return errors.New("gameId must be valid UUID")
 	}
 
 	if _, err := uuid.Parse(a.WorldId); err != nil {
@@ -60,7 +54,6 @@ func (a *WorldRequest) Bind(r *http.Request) error {
 func (a *WorldRequest) ToDomain() domain.World {
 	return domain.World{
 		WorldId: uuid.MustParse(a.WorldId),
-		GameId:  uuid.MustParse(a.GameId),
 		Name:    a.Name,
 	}
 }

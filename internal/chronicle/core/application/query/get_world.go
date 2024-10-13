@@ -19,19 +19,19 @@ type getWorldHandler struct {
 }
 
 func (h getWorldHandler) Handle(ctx context.Context, q worldPort.GetWorldQuery) (domain.World, error) {
-	world, err := h.Persistence.GetWorld(ctx, q.GameId, q.WorldId)
+	world, err := h.Persistence.GetWorld(ctx, q.WorldId)
 	if err != nil {
 		return domain.World{}, err
 	}
 
 	// fetch locations tied to this world, later we can included/exclude these via jsonapi
-	locations, err := h.Persistence.ListLocations(ctx, q.GameId, q.WorldId)
+	locations, err := h.Persistence.ListLocations(ctx, q.WorldId)
 	if err != nil {
 		return domain.World{}, err
 	}
 	world.Locations = locations
 
-	characters, err := h.Persistence.ListCharacters(ctx, q.GameId, q.WorldId)
+	characters, err := h.Persistence.ListCharacters(ctx, q.WorldId)
 	if err != nil {
 		return domain.World{}, err
 	}

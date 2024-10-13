@@ -55,19 +55,20 @@ func (q *Queries) CreateCharacter(ctx context.Context, arg CreateCharacterParams
 
 const createGame = `-- name: CreateGame :one
 INSERT INTO game (
-  game_id, name, type, created_at, updated_at
+  game_id, world_id, name, type, created_at, updated_at
 ) VALUES (
-  $1, $2, $3, $4, $5
+  $1, $2, $3, $4, $5, $6
 )
 ON CONFLICT (game_id) DO UPDATE SET
   name = EXCLUDED.name,
   type = EXCLUDED.type,
   updated_at = EXCLUDED.updated_at
-RETURNING id, game_id, name, type, created_at, updated_at
+RETURNING id, game_id, world_id, name, type, created_at, updated_at
 `
 
 type CreateGameParams struct {
 	GameID    uuid.UUID
+	WorldID   int64
 	Name      string
 	Type      string
 	CreatedAt pgtype.Timestamptz
@@ -77,6 +78,7 @@ type CreateGameParams struct {
 func (q *Queries) CreateGame(ctx context.Context, arg CreateGameParams) (Game, error) {
 	row := q.db.QueryRow(ctx, createGame,
 		arg.GameID,
+		arg.WorldID,
 		arg.Name,
 		arg.Type,
 		arg.CreatedAt,
@@ -86,6 +88,7 @@ func (q *Queries) CreateGame(ctx context.Context, arg CreateGameParams) (Game, e
 	err := row.Scan(
 		&i.ID,
 		&i.GameID,
+		&i.WorldID,
 		&i.Name,
 		&i.Type,
 		&i.CreatedAt,
@@ -96,22 +99,21 @@ func (q *Queries) CreateGame(ctx context.Context, arg CreateGameParams) (Game, e
 
 const createLocation = `-- name: CreateLocation :one
 INSERT INTO location (
-  location_id, world_id, game_id, type, name, path, created_at, updated_at
+  location_id, world_id, type, name, path, created_at, updated_at
 ) VALUES (
-  $1, $2, $3, $4, $5, $6, $7, $8
+  $1, $2, $3, $4, $5, $6, $7
 )
 ON CONFLICT (location_id) DO UPDATE SET
   name = EXCLUDED.name,
   type = EXCLUDED.type,
   path = EXCLUDED.path,
   updated_at = EXCLUDED.updated_at
-RETURNING id, location_id, game_id, world_id, type, name, path, created_at, updated_at
+RETURNING id, location_id, world_id, type, name, path, created_at, updated_at
 `
 
 type CreateLocationParams struct {
 	LocationID uuid.UUID
 	WorldID    int64
-	GameID     int64
 	Type       string
 	Name       string
 	Path       pgtype.Text
@@ -123,7 +125,6 @@ func (q *Queries) CreateLocation(ctx context.Context, arg CreateLocationParams) 
 	row := q.db.QueryRow(ctx, createLocation,
 		arg.LocationID,
 		arg.WorldID,
-		arg.GameID,
 		arg.Type,
 		arg.Name,
 		arg.Path,
@@ -134,7 +135,6 @@ func (q *Queries) CreateLocation(ctx context.Context, arg CreateLocationParams) 
 	err := row.Scan(
 		&i.ID,
 		&i.LocationID,
-		&i.GameID,
 		&i.WorldID,
 		&i.Type,
 		&i.Name,
@@ -147,19 +147,18 @@ func (q *Queries) CreateLocation(ctx context.Context, arg CreateLocationParams) 
 
 const createWorld = `-- name: CreateWorld :one
 INSERT INTO world (
-  world_id, game_id, name, created_at, updated_at
+  world_id, name, created_at, updated_at
 ) VALUES (
-  $1, $2, $3, $4, $5
+  $1, $2, $3, $4
 )
 ON CONFLICT (world_id) DO UPDATE SET
   name = EXCLUDED.name,
   updated_at = EXCLUDED.updated_at
-RETURNING id, world_id, game_id, name, created_at, updated_at
+RETURNING id, world_id, name, created_at, updated_at
 `
 
 type CreateWorldParams struct {
 	WorldID   uuid.UUID
-	GameID    int64
 	Name      string
 	CreatedAt pgtype.Timestamptz
 	UpdatedAt pgtype.Timestamptz
@@ -168,7 +167,6 @@ type CreateWorldParams struct {
 func (q *Queries) CreateWorld(ctx context.Context, arg CreateWorldParams) (World, error) {
 	row := q.db.QueryRow(ctx, createWorld,
 		arg.WorldID,
-		arg.GameID,
 		arg.Name,
 		arg.CreatedAt,
 		arg.UpdatedAt,
@@ -177,7 +175,6 @@ func (q *Queries) CreateWorld(ctx context.Context, arg CreateWorldParams) (World
 	err := row.Scan(
 		&i.ID,
 		&i.WorldID,
-		&i.GameID,
 		&i.Name,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -244,7 +241,7 @@ func (q *Queries) GetCharacterFromUuid(ctx context.Context, characterID uuid.UUI
 }
 
 const getGame = `-- name: GetGame :one
-SELECT id, game_id, name, type, created_at, updated_at FROM game
+SELECT id, game_id, world_id, name, type, created_at, updated_at FROM game
 WHERE id = $1 LIMIT 1
 `
 
@@ -254,6 +251,7 @@ func (q *Queries) GetGame(ctx context.Context, id int64) (Game, error) {
 	err := row.Scan(
 		&i.ID,
 		&i.GameID,
+		&i.WorldID,
 		&i.Name,
 		&i.Type,
 		&i.CreatedAt,
@@ -263,7 +261,7 @@ func (q *Queries) GetGame(ctx context.Context, id int64) (Game, error) {
 }
 
 const getGameFromUuid = `-- name: GetGameFromUuid :one
-SELECT id, game_id, name, type, created_at, updated_at FROM game
+SELECT id, game_id, world_id, name, type, created_at, updated_at FROM game
 WHERE game.game_id = $1 LIMIT 1
 `
 
@@ -273,6 +271,7 @@ func (q *Queries) GetGameFromUuid(ctx context.Context, gameID uuid.UUID) (Game, 
 	err := row.Scan(
 		&i.ID,
 		&i.GameID,
+		&i.WorldID,
 		&i.Name,
 		&i.Type,
 		&i.CreatedAt,
@@ -281,62 +280,48 @@ func (q *Queries) GetGameFromUuid(ctx context.Context, gameID uuid.UUID) (Game, 
 	return i, err
 }
 
-const getGameWorlds = `-- name: GetGameWorlds :many
-SELECT world.id, world_id, world.game_id, world.name, world.created_at, world.updated_at, game.id, game.game_id, game.name, type, game.created_at, game.updated_at FROM world
-JOIN game ON world.game_id = game.id
-WHERE game.game_id = $1
+const getGameWorld = `-- name: GetGameWorld :one
+SELECT world.id, world.world_id, world.name, world.created_at, world.updated_at, game.id, game_id, game.world_id, game.name, type, game.created_at, game.updated_at FROM world
+JOIN game ON game.game_id = $1
 `
 
-type GetGameWorldsRow struct {
+type GetGameWorldRow struct {
 	ID          int64
 	WorldID     uuid.UUID
-	GameID      int64
 	Name        string
 	CreatedAt   pgtype.Timestamptz
 	UpdatedAt   pgtype.Timestamptz
 	ID_2        int64
-	GameID_2    uuid.UUID
+	GameID      uuid.UUID
+	WorldID_2   int64
 	Name_2      string
 	Type        string
 	CreatedAt_2 pgtype.Timestamptz
 	UpdatedAt_2 pgtype.Timestamptz
 }
 
-func (q *Queries) GetGameWorlds(ctx context.Context, gameID uuid.UUID) ([]GetGameWorldsRow, error) {
-	rows, err := q.db.Query(ctx, getGameWorlds, gameID)
-	if err != nil {
-		return nil, err
-	}
-	defer rows.Close()
-	var items []GetGameWorldsRow
-	for rows.Next() {
-		var i GetGameWorldsRow
-		if err := rows.Scan(
-			&i.ID,
-			&i.WorldID,
-			&i.GameID,
-			&i.Name,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.ID_2,
-			&i.GameID_2,
-			&i.Name_2,
-			&i.Type,
-			&i.CreatedAt_2,
-			&i.UpdatedAt_2,
-		); err != nil {
-			return nil, err
-		}
-		items = append(items, i)
-	}
-	if err := rows.Err(); err != nil {
-		return nil, err
-	}
-	return items, nil
+func (q *Queries) GetGameWorld(ctx context.Context, gameID uuid.UUID) (GetGameWorldRow, error) {
+	row := q.db.QueryRow(ctx, getGameWorld, gameID)
+	var i GetGameWorldRow
+	err := row.Scan(
+		&i.ID,
+		&i.WorldID,
+		&i.Name,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.ID_2,
+		&i.GameID,
+		&i.WorldID_2,
+		&i.Name_2,
+		&i.Type,
+		&i.CreatedAt_2,
+		&i.UpdatedAt_2,
+	)
+	return i, err
 }
 
 const getWorld = `-- name: GetWorld :one
-SELECT id, world_id, game_id, name, created_at, updated_at FROM world
+SELECT id, world_id, name, created_at, updated_at FROM world
 WHERE id = $1 LIMIT 1
 `
 
@@ -346,7 +331,6 @@ func (q *Queries) GetWorld(ctx context.Context, id int64) (World, error) {
 	err := row.Scan(
 		&i.ID,
 		&i.WorldID,
-		&i.GameID,
 		&i.Name,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -355,7 +339,7 @@ func (q *Queries) GetWorld(ctx context.Context, id int64) (World, error) {
 }
 
 const getWorldCharacters = `-- name: GetWorldCharacters :many
-SELECT character.id, character.character_id, character.name, description, character.created_at, character.updated_at, world.id, world.world_id, game_id, world.name, world.created_at, world.updated_at, world_character.id, world_character_id, world_character.character_id, world_character.world_id, character_type, world_character.created_at, world_character.updated_at FROM character
+SELECT character.id, character.character_id, character.name, description, character.created_at, character.updated_at, world.id, world.world_id, world.name, world.created_at, world.updated_at, world_character.id, world_character_id, world_character.character_id, world_character.world_id, character_type, world_character.created_at, world_character.updated_at FROM character
 JOIN world ON world.world_id = $1
 JOIN world_character ON world_character.world_id = world.id
 `
@@ -369,7 +353,6 @@ type GetWorldCharactersRow struct {
 	UpdatedAt        pgtype.Timestamptz
 	ID_2             int64
 	WorldID          uuid.UUID
-	GameID           int64
 	Name_2           string
 	CreatedAt_2      pgtype.Timestamptz
 	UpdatedAt_2      pgtype.Timestamptz
@@ -400,7 +383,6 @@ func (q *Queries) GetWorldCharacters(ctx context.Context, worldID uuid.UUID) ([]
 			&i.UpdatedAt,
 			&i.ID_2,
 			&i.WorldID,
-			&i.GameID,
 			&i.Name_2,
 			&i.CreatedAt_2,
 			&i.UpdatedAt_2,
@@ -423,7 +405,7 @@ func (q *Queries) GetWorldCharacters(ctx context.Context, worldID uuid.UUID) ([]
 }
 
 const getWorldFromUuid = `-- name: GetWorldFromUuid :one
-SELECT id, world_id, game_id, name, created_at, updated_at FROM world
+SELECT id, world_id, name, created_at, updated_at FROM world
 WHERE world_id = $1 LIMIT 1
 `
 
@@ -433,7 +415,6 @@ func (q *Queries) GetWorldFromUuid(ctx context.Context, worldID uuid.UUID) (Worl
 	err := row.Scan(
 		&i.ID,
 		&i.WorldID,
-		&i.GameID,
 		&i.Name,
 		&i.CreatedAt,
 		&i.UpdatedAt,
@@ -442,22 +423,14 @@ func (q *Queries) GetWorldFromUuid(ctx context.Context, worldID uuid.UUID) (Worl
 }
 
 const getWorldLocations = `-- name: GetWorldLocations :many
-SELECT location.id, location_id, location.game_id, location.world_id, location.type, location.name, path, location.created_at, location.updated_at, world.id, world.world_id, world.game_id, world.name, world.created_at, world.updated_at, game.id, game.game_id, game.name, game.type, game.created_at, game.updated_at FROM location
+SELECT location.id, location_id, location.world_id, type, location.name, path, location.created_at, location.updated_at, world.id, world.world_id, world.name, world.created_at, world.updated_at FROM location
 JOIN world ON location.world_id = world.id
-JOIN game ON location.game_id = game.id
-WHERE game.game_id = $1 and
-world.world_id = $2
+WHERE world.world_id = $1
 `
-
-type GetWorldLocationsParams struct {
-	GameID  uuid.UUID
-	WorldID uuid.UUID
-}
 
 type GetWorldLocationsRow struct {
 	ID          int64
 	LocationID  uuid.UUID
-	GameID      int64
 	WorldID     int64
 	Type        string
 	Name        string
@@ -466,20 +439,13 @@ type GetWorldLocationsRow struct {
 	UpdatedAt   pgtype.Timestamptz
 	ID_2        int64
 	WorldID_2   uuid.UUID
-	GameID_2    int64
 	Name_2      string
 	CreatedAt_2 pgtype.Timestamptz
 	UpdatedAt_2 pgtype.Timestamptz
-	ID_3        int64
-	GameID_3    uuid.UUID
-	Name_3      string
-	Type_2      string
-	CreatedAt_3 pgtype.Timestamptz
-	UpdatedAt_3 pgtype.Timestamptz
 }
 
-func (q *Queries) GetWorldLocations(ctx context.Context, arg GetWorldLocationsParams) ([]GetWorldLocationsRow, error) {
-	rows, err := q.db.Query(ctx, getWorldLocations, arg.GameID, arg.WorldID)
+func (q *Queries) GetWorldLocations(ctx context.Context, worldID uuid.UUID) ([]GetWorldLocationsRow, error) {
+	rows, err := q.db.Query(ctx, getWorldLocations, worldID)
 	if err != nil {
 		return nil, err
 	}
@@ -490,7 +456,6 @@ func (q *Queries) GetWorldLocations(ctx context.Context, arg GetWorldLocationsPa
 		if err := rows.Scan(
 			&i.ID,
 			&i.LocationID,
-			&i.GameID,
 			&i.WorldID,
 			&i.Type,
 			&i.Name,
@@ -499,16 +464,9 @@ func (q *Queries) GetWorldLocations(ctx context.Context, arg GetWorldLocationsPa
 			&i.UpdatedAt,
 			&i.ID_2,
 			&i.WorldID_2,
-			&i.GameID_2,
 			&i.Name_2,
 			&i.CreatedAt_2,
 			&i.UpdatedAt_2,
-			&i.ID_3,
-			&i.GameID_3,
-			&i.Name_3,
-			&i.Type_2,
-			&i.CreatedAt_3,
-			&i.UpdatedAt_3,
 		); err != nil {
 			return nil, err
 		}
@@ -521,7 +479,7 @@ func (q *Queries) GetWorldLocations(ctx context.Context, arg GetWorldLocationsPa
 }
 
 const listGames = `-- name: ListGames :many
-SELECT id, game_id, name, type, created_at, updated_at FROM game
+SELECT id, game_id, world_id, name, type, created_at, updated_at FROM game
 ORDER BY name
 `
 
@@ -537,6 +495,7 @@ func (q *Queries) ListGames(ctx context.Context) ([]Game, error) {
 		if err := rows.Scan(
 			&i.ID,
 			&i.GameID,
+			&i.WorldID,
 			&i.Name,
 			&i.Type,
 			&i.CreatedAt,
@@ -553,7 +512,7 @@ func (q *Queries) ListGames(ctx context.Context) ([]Game, error) {
 }
 
 const listWorlds = `-- name: ListWorlds :many
-SELECT id, world_id, game_id, name, created_at, updated_at FROM world
+SELECT id, world_id, name, created_at, updated_at FROM world
 ORDER BY name
 `
 
@@ -569,7 +528,6 @@ func (q *Queries) ListWorlds(ctx context.Context) ([]World, error) {
 		if err := rows.Scan(
 			&i.ID,
 			&i.WorldID,
-			&i.GameID,
 			&i.Name,
 			&i.CreatedAt,
 			&i.UpdatedAt,

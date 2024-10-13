@@ -12,7 +12,6 @@ type CreateWorld struct {
 type CreateWorldHander common.CommandHandler[CreateWorld]
 
 type GetWorldQuery struct {
-	GameId  uuid.UUID
 	WorldId uuid.UUID
 }
 type GetWorldHandler common.QueryHandler[GetWorldQuery, domain.World]

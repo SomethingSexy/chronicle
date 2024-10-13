@@ -12,9 +12,9 @@ ORDER BY name;
 
 -- name: CreateGame :one
 INSERT INTO game (
-  game_id, name, type, created_at, updated_at
+  game_id, world_id, name, type, created_at, updated_at
 ) VALUES (
-  $1, $2, $3, $4, $5
+  $1, $2, $3, $4, $5, $6
 )
 ON CONFLICT (game_id) DO UPDATE SET
   name = EXCLUDED.name,
@@ -41,10 +41,9 @@ WHERE id = $1 LIMIT 1;
 SELECT * FROM world
 WHERE world_id = $1 LIMIT 1;
 
--- name: GetGameWorlds :many
+-- name: GetGameWorld :one
 SELECT * FROM world
-JOIN game ON world.game_id = game.id
-WHERE game.game_id = $1;
+JOIN game ON game.game_id = $1;
 
 -- name: ListWorlds :many
 SELECT * FROM world
@@ -52,9 +51,9 @@ ORDER BY name;
 
 -- name: CreateWorld :one
 INSERT INTO world (
-  world_id, game_id, name, created_at, updated_at
+  world_id, name, created_at, updated_at
 ) VALUES (
-  $1, $2, $3, $4, $5
+  $1, $2, $3, $4
 )
 ON CONFLICT (world_id) DO UPDATE SET
   name = EXCLUDED.name,
@@ -72,9 +71,9 @@ WHERE world_id = $1;
 
 -- name: CreateLocation :one
 INSERT INTO location (
-  location_id, world_id, game_id, type, name, path, created_at, updated_at
+  location_id, world_id, type, name, path, created_at, updated_at
 ) VALUES (
-  $1, $2, $3, $4, $5, $6, $7, $8
+  $1, $2, $3, $4, $5, $6, $7
 )
 ON CONFLICT (location_id) DO UPDATE SET
   name = EXCLUDED.name,
@@ -86,9 +85,7 @@ RETURNING *;
 -- name: GetWorldLocations :many
 SELECT * FROM location
 JOIN world ON location.world_id = world.id
-JOIN game ON location.game_id = game.id
-WHERE game.game_id = $1 and
-world.world_id = $2;
+WHERE world.world_id = $1;
 
 -- name: CreateCharacter :one
 INSERT INTO character (

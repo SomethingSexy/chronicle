@@ -2,6 +2,7 @@ package query
 
 import (
 	"context"
+	"log"
 	"time"
 
 	"github.com/SomethingSexy/chronicle/internal/chronicle/adapter/persistence/postgres/sqlc/repository"
@@ -23,12 +24,18 @@ type GameQuery struct {
 
 // Create a game
 func (g GameQuery) CreateGame(ctx context.Context, game domain.Game) (domain.Game, error) {
+	world, err := g.Queries.GetWorldFromUuid(ctx, game.WorldId)
+	if err != nil {
+		return domain.Game{}, err
+	}
+
 	ts := pgtype.Timestamptz{
 		Time:  time.Now(),
 		Valid: true,
 	}
 	args := repository.CreateGameParams{
 		GameID:    game.GameId,
+		WorldID:   world.ID,
 		Name:      game.Name,
 		Type:      game.Type.String(),
 		CreatedAt: ts,
@@ -75,31 +82,33 @@ func (g GameQuery) GetGame(ctx context.Context, id uuid.UUID) (domain.Game, erro
 	if err != nil {
 		return domain.Game{}, err
 	}
+	world, err := g.Queries.GetWorld(ctx, response.WorldID)
+	if err != nil {
+		return domain.Game{}, err
+	}
+
+	log.Println(response.Type, domain.NewGameType(response.Type))
 
 	game := domain.Game{
-		Name:   response.Name,
-		Type:   domain.NewGameType(response.Type),
-		GameId: response.GameID,
+		Name:    response.Name,
+		Type:    domain.NewGameType(response.Type),
+		GameId:  response.GameID,
+		WorldId: world.WorldID,
 	}
 
 	return game, nil
 }
 
-func (g GameQuery) GetGameWorlds(ctx context.Context, gameId uuid.UUID) ([]domain.World, error) {
-	response, err := g.Queries.GetGameWorlds(ctx, gameId)
+func (g GameQuery) GetGameWorld(ctx context.Context, gameId uuid.UUID) (domain.World, error) {
+	response, err := g.Queries.GetGameWorld(ctx, gameId)
 	if err != nil {
-		return nil, err
+		return domain.World{}, err
 	}
 
-	worlds := make([]domain.World, len(response))
-
-	for i, world := range response {
-		worlds[i] = domain.World{
-			WorldId: world.WorldID,
-			GameId:  gameId,
-			Name:    world.Name,
-		}
+	world := domain.World{
+		WorldId: response.WorldID,
+		Name:    response.Name,
 	}
 
-	return worlds, nil
+	return world, nil
 }

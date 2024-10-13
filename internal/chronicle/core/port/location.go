@@ -12,7 +12,6 @@ type CreateLocation struct {
 type CreateLocationHander common.CommandHandler[CreateLocation]
 
 type LocationsQuery struct {
-	GameId  uuid.UUID
 	WorldId uuid.UUID
 }
 type ListLocationsHandler common.QueryHandler[LocationsQuery, []domain.Location]

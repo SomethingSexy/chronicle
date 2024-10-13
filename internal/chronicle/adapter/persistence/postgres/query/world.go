@@ -23,11 +23,6 @@ type WorldQuery struct {
 }
 
 func (g WorldQuery) CreateWorld(ctx context.Context, world domain.World) (domain.World, error) {
-	game, err := g.Queries.GetGameFromUuid(ctx, world.GameId)
-	if err != nil {
-		return domain.World{}, err
-	}
-
 	ts := pgtype.Timestamptz{
 		Time:  time.Now(),
 		Valid: true,
@@ -35,7 +30,6 @@ func (g WorldQuery) CreateWorld(ctx context.Context, world domain.World) (domain
 	args := repository.CreateWorldParams{
 		WorldID:   world.WorldId,
 		Name:      world.Name,
-		GameID:    game.ID,
 		CreatedAt: ts,
 		UpdatedAt: ts,
 	}
@@ -51,7 +45,7 @@ func (g WorldQuery) CreateWorld(ctx context.Context, world domain.World) (domain
 	}, nil
 }
 
-func (g WorldQuery) GetWorld(ctx context.Context, gameId uuid.UUID, worldId uuid.UUID) (domain.World, error) {
+func (g WorldQuery) GetWorld(ctx context.Context, worldId uuid.UUID) (domain.World, error) {
 	world, err := g.Queries.GetWorldFromUuid(ctx, worldId)
 	if err != nil {
 		return domain.World{}, err
@@ -59,7 +53,6 @@ func (g WorldQuery) GetWorld(ctx context.Context, gameId uuid.UUID, worldId uuid
 
 	return domain.World{
 		WorldId: world.WorldID,
-		GameId:  gameId,
 		Name:    world.Name,
 	}, nil
 }
@@ -91,7 +84,6 @@ func (g WorldQuery) CreateLocation(ctx context.Context, location domain.Location
 	args := repository.CreateLocationParams{
 		LocationID: location.LocationId,
 		WorldID:    world.ID,
-		GameID:     world.GameID,
 		Name:       location.Name,
 		Type:       location.Type,
 		Path: pgtype.Text{
@@ -110,11 +102,8 @@ func (g WorldQuery) CreateLocation(ctx context.Context, location domain.Location
 	return location, nil
 }
 
-func (g WorldQuery) ListLocations(ctx context.Context, gameId uuid.UUID, worldId uuid.UUID) ([]domain.Location, error) {
-	response, err := g.Queries.GetWorldLocations(ctx, repository.GetWorldLocationsParams{
-		GameID:  gameId,
-		WorldID: worldId,
-	})
+func (g WorldQuery) ListLocations(ctx context.Context, worldId uuid.UUID) ([]domain.Location, error) {
+	response, err := g.Queries.GetWorldLocations(ctx, worldId)
 	if err != nil {
 		return []domain.Location{}, err
 	}
@@ -184,7 +173,7 @@ func (g WorldQuery) UpsertCharacterToGameWorld(ctx context.Context, worldId uuid
 	return g.Queries.UpsertCharacterToGameWorld(ctx, requestArgs)
 }
 
-func (g WorldQuery) ListCharacters(ctx context.Context, gameId uuid.UUID, worldId uuid.UUID) ([]domain.Character, error) {
+func (g WorldQuery) ListCharacters(ctx context.Context, worldId uuid.UUID) ([]domain.Character, error) {
 	response, err := g.Queries.GetWorldCharacters(ctx, worldId)
 	if err != nil {
 		return nil, err

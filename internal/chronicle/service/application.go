@@ -8,6 +8,7 @@ import (
 	"github.com/SomethingSexy/chronicle/internal/chronicle/adapter/http"
 	"github.com/SomethingSexy/chronicle/internal/chronicle/adapter/http/character"
 	"github.com/SomethingSexy/chronicle/internal/chronicle/adapter/http/game"
+	"github.com/SomethingSexy/chronicle/internal/chronicle/adapter/http/world"
 	"github.com/SomethingSexy/chronicle/internal/chronicle/adapter/persistence/postgres/query"
 	"github.com/SomethingSexy/chronicle/internal/chronicle/adapter/persistence/postgres/sqlc/repository"
 	"github.com/SomethingSexy/chronicle/internal/chronicle/core/application"
@@ -56,8 +57,12 @@ func (c ChronicleService) Routes() map[string][]chi.Router {
 	characterHttpServer := character.NewCharacterHttpServer(c.ChronicleApplication.Commands.CharacterCommands, c.ChronicleApplication.Queries.CharacterQueries)
 	characterRoutes := characterHttpServer.Routes()
 
+	worldHttpServer := world.NewWorldHttpServer(c.ChronicleApplication.Commands.WorldCommands, c.ChronicleApplication.Queries.WorldQueries)
+	worldRoutes := worldHttpServer.Routes()
+
 	return map[string][]chi.Router{
 		"Games":      {gameRoutes},
 		"Characters": {characterRoutes},
+		"Worlds":     {worldRoutes},
 	}
 }

@@ -1,9 +1,6 @@
 
 @gameId = 0be09611-1e65-44f8-a103-883cfaccf1aa
 @worldId = 56e64eee-ab55-4ce1-a255-1b8b20ac78cb
-@locationId = a709b873-2224-4f2a-9fc4-32b8f883c752
-@nestedLocationId = e24e71c5-ea97-458c-ac95-3b53b53b5274
-@characterId = a751b19a-ef91-4274-85d2-850569a6ee08
 
 # @name create_game
 
@@ -15,6 +12,7 @@ Content-Type: application/vnd.api+json
         "type": "games",
         "attributes": {
             "gameId": "{{gameId}}",
+            "worldId": "{{worldId}}",
             "name": "Milwaukee By Night",
             "type": "vtm"
         }
@@ -29,83 +27,8 @@ Content-Type: application/vnd.api+json
 
 ###
 
-# @name create_world
-POST http://localhost:3000/games/{{gameId}}/worlds
-Content-Type: application/vnd.api+json
-
-{
-    "data": {
-        "type": "worlds",
-        "attributes": {
-            "worldId": "{{worldId}}",
-            "gameId": "{{gameId}}",
-            "name": "My World"
-        }
-    }
-}
-
-###
-
-# @name get_world
-GET http://localhost:3000/games/{{gameId}}/worlds/{{worldId}}
-Content-Type: application/vnd.api+json
-
-###
-
-# @name add_character_to_world
-POST http://localhost:3000/games/{{gameId}}/worlds/{{worldId}}/relationships/characters
-Content-Type: application/vnd.api+json
-
-{
-    "data": {
-        "type": "characters",
-        "id": "{{characterId}}"
-    }
-}
-
-###
-
 # @name list
 GET http://localhost:3000/games
 Content-Type: application/vnd.api+json
-
-###
-
-# @name create_location
-POST http://localhost:3000/games/{{gameId}}/worlds/{{worldId}}/locations
-Content-Type: application/vnd.api+json
-
-{
-    "data": {
-        "type": "locations",
-        "attributes": {
-            "locationId": "{{locationId}}",
-            "gameId": "{{gameId}}",
-            "worldId": "{{worldId}}",
-            "name": "My Location",
-            "type": "City"
-        }
-    }
-}
-
-###
-
-# @name create_nested_location
-POST http://localhost:3000/games/{{gameId}}/worlds/{{worldId}}/locations
-Content-Type: application/vnd.api+json
-
-{
-    "data": {
-        "type": "locations",
-        "attributes": {
-            "locationId": "{{nestedLocationId}}",
-            "gameId": "{{gameId}}",
-            "worldId": "{{worldId}}",
-            "name": "My Building",
-            "type": "Building",
-            "path": ["{{locationId}}"]
-        }
-    }
-}
 
 ###

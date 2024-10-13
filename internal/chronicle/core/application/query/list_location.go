@@ -19,7 +19,7 @@ type listLocationsHandler struct {
 }
 
 func (h listLocationsHandler) Handle(ctx context.Context, query gamePort.LocationsQuery) ([]domain.Location, error) {
-	locations, err := h.Persistence.ListLocations(ctx, query.GameId, query.WorldId)
+	locations, err := h.Persistence.ListLocations(ctx, query.WorldId)
 	if err != nil {
 		return nil, err
 	}

@@ -34,6 +34,7 @@ func (h HttpServer) Start() {
 	// TODO: Given the application, this should mount all of the route handlers
 	r.Mount("/games", h.app.Routes()["Games"][0])
 	r.Mount("/characters", h.app.Routes()["Characters"][0])
+	r.Mount("/worlds", h.app.Routes()["Worlds"][0])
 
 	http.ListenAndServe(":3000", r)
 }

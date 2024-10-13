@@ -30,7 +30,7 @@ func (g GameQuery) CreateGame(ctx context.Context, game domain.Game) (domain.Gam
 	args := repository.CreateGameParams{
 		GameID:    game.GameId,
 		Name:      game.Name,
-		Type:      game.Type,
+		Type:      game.Type.String(),
 		CreatedAt: ts,
 		UpdatedAt: ts,
 	}
@@ -42,7 +42,7 @@ func (g GameQuery) CreateGame(ctx context.Context, game domain.Game) (domain.Gam
 
 	return domain.Game{
 		Name: response.Name,
-		Type: response.Type,
+		Type: domain.NewGameType(response.Type),
 	}, nil
 }
 
@@ -62,7 +62,7 @@ func (g GameQuery) ListGames(ctx context.Context) ([]domain.Game, error) {
 	for i, game := range response {
 		games[i] = domain.Game{
 			Name:   game.Name,
-			Type:   game.Type,
+			Type:   domain.NewGameType(game.Type),
 			GameId: game.GameID,
 		}
 	}
@@ -78,7 +78,7 @@ func (g GameQuery) GetGame(ctx context.Context, id uuid.UUID) (domain.Game, erro
 
 	game := domain.Game{
 		Name:   response.Name,
-		Type:   response.Type,
+		Type:   domain.NewGameType(response.Type),
 		GameId: response.GameID,
 	}
 

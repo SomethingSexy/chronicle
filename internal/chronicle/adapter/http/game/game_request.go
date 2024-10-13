@@ -19,7 +19,7 @@ func NewGameRequest(g domain.Game) GameRequest {
 		ID:     g.GameId.String(),
 		GameId: g.GameId.String(),
 		Name:   g.Name,
-		Type:   g.Type,
+		Type:   g.Type.String(),
 		Worlds: worlds,
 	}
 }
@@ -52,6 +52,6 @@ func (a *GameRequest) ToDomain() domain.Game {
 	return domain.Game{
 		GameId: uuid.MustParse(a.GameId),
 		Name:   a.Name,
-		Type:   a.Type,
+		Type:   domain.NewGameType(a.Type),
 	}
 }

@@ -1,29 +1,32 @@
 package domain
 
 import (
-	"fmt"
-	"os"
+	"log"
 
 	"github.com/goccy/go-json"
 	"github.com/kaptinlin/jsonschema"
 )
 
+type GameCharacterValidator interface {
+	Schema() ([]byte, error)
+}
+
 // This should probably be generic, need to
 // test this against the schema compiler though.
 // Maybe after it is valid, we can marshall to a strict type
-type GameCharacter[D interface{}] struct {
+type GameCharacter[D GameCharacterValidator] struct {
 	Data D
+	Type GameType
 }
 
 func (g GameCharacter[D]) Validate() (bool, error) {
-	// For now just read on load (for testing purposes), we can deal with caching this later
-	var vtmV5CharacterSchema, err = os.ReadFile("./game/vtm_v5_character_schema.json")
+	characterSchema, err := g.Data.Schema()
 	if err != nil {
 		return false, err
 	}
 
 	compiler := jsonschema.NewCompiler()
-	schema, err := compiler.Compile(vtmV5CharacterSchema)
+	schema, err := compiler.Compile(characterSchema)
 	if err != nil {
 		return false, err
 	}
@@ -33,6 +36,7 @@ func (g GameCharacter[D]) Validate() (bool, error) {
 	// For now we are going to marshall and unmarshall back into
 	// a generic interface of maps so we can validate the schema
 	// Hide it all here
+	log.Println(g.Data)
 	dataAsByte, err := json.Marshal(g.Data)
 	if err != nil {
 		return false, err
@@ -46,30 +50,14 @@ func (g GameCharacter[D]) Validate() (bool, error) {
 
 	result := schema.Validate(dataAsInterface)
 	if !result.IsValid() {
-		details, err := json.MarshalIndent(result.ToList(), "", "  ")
-		if err != nil {
-			return false, err
-		}
-		fmt.Println(string(details))
+		log.Println(result)
+		// details, err := json.MarshalIndent(result.ToList(), "", "  ")
+		// if err != nil {
+		// 	return false, err
+		// }
+		// fmt.Println(string(details))
 		return false, nil
 	}
 
 	return true, nil
-}
-
-type VtmGameCharacter struct {
-	Name        string       `json:"name"`
-	Disciplines []Discipline `json:"disciplines"`
-}
-
-type Discipline struct {
-	Name   string  `json:"name"`
-	Level  int     `json:"level"`
-	Powers []Power `json:"powers"`
-}
-
-type Power struct {
-	Name        string `json:"name"`
-	Level       int    `json:"level"`
-	Description string `json:"description,omitempty"`
 }

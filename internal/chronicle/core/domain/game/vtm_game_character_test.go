@@ -1,23 +1,17 @@
-package domain_test
+package game_test
 
 import (
 	"testing"
 
 	"github.com/SomethingSexy/chronicle/internal/chronicle/core/domain"
-	"github.com/goccy/go-json"
+	"github.com/SomethingSexy/chronicle/internal/chronicle/core/domain/game"
 )
 
 func TestGameCharacter_Validate_Valid(t *testing.T) {
-	var data interface{}
-
-	if err := json.Unmarshal([]byte(`{
-		"name": "John Doe"
-	}`), &data); err != nil {
-		t.Fatalf("Failed to unmarshal test cases: %v", err)
-	}
-
-	gameCharacter := domain.GameCharacter[any]{
-		Data: data,
+	gameCharacter := domain.GameCharacter[game.VtmGameCharacter]{
+		Data: game.VtmGameCharacter{
+			Name: "John Doe",
+		},
 	}
 
 	valid, err := gameCharacter.Validate()
@@ -32,13 +26,13 @@ func TestGameCharacter_Validate_Valid(t *testing.T) {
 }
 
 func TestGameCharacter_Validate_Disciplines_Valid(t *testing.T) {
-	gameCharacter := domain.GameCharacter[domain.VtmGameCharacter]{
-		Data: domain.VtmGameCharacter{
+	gameCharacter := domain.GameCharacter[game.VtmGameCharacter]{
+		Data: game.VtmGameCharacter{
 			Name: "John Doe",
-			Disciplines: []domain.Discipline{{
+			Disciplines: []game.Discipline{{
 				Name:  "Protean",
 				Level: 1,
-				Powers: []domain.Power{{
+				Powers: []game.Power{{
 					Name:        "Eyes of the Beast",
 					Level:       1,
 					Description: "See perfectly in total darkness with glowing red eyes.",

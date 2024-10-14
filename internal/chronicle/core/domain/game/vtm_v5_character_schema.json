@@ -1,0 +1,540 @@
+{
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "The name of the character."
+    },
+    "clan": {
+      "type": "string",
+      "description": "The clan to which the character belongs."
+    },
+    "sire": {
+      "type": "string",
+      "description": "The vampire who sired this character."
+    },
+    "generation": {
+      "type": "integer",
+      "description": "The generation of the character, representing how far removed they are from Caine."
+    },
+    "concept": {
+      "type": "string",
+      "description": "A brief description of the character's concept or archetype."
+    },
+    "predator_type": {
+      "type": "string",
+      "description": "The character's predator type, reflecting how they feed."
+    },
+    "attributes": {
+      "type": "object",
+      "properties": {
+        "physical": {
+          "type": "object",
+          "properties": {
+            "strength": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "dexterity": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "stamina": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            }
+          },
+          "required": [
+            "strength",
+            "dexterity",
+            "stamina"
+          ]
+        },
+        "social": {
+          "type": "object",
+          "properties": {
+            "charisma": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "manipulation": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "composure": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            }
+          },
+          "required": [
+            "charisma",
+            "manipulation",
+            "composure"
+          ]
+        },
+        "mental": {
+          "type": "object",
+          "properties": {
+            "intelligence": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "wits": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            },
+            "resolve": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 5
+            }
+          },
+          "required": [
+            "intelligence",
+            "wits",
+            "resolve"
+          ]
+        }
+      },
+      "required": [
+        "physical",
+        "social",
+        "mental"
+      ]
+    },
+    "skills": {
+      "type": "object",
+      "properties": {
+        "physical": {
+          "type": "object",
+          "properties": {
+            "athletics": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5
+            },
+            "brawl": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5
+            },
+            "drive": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5
+            },
+            "firearms": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5
+            },
+            "melee": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5
+            },
+            "larceny": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5
+            },
+            "stealth": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5
+            },
+            "survival": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5
+            }
+          },
+          "required": [
+            "athletics",
+            "brawl",
+            "drive",
+            "firearms",
+            "melee",
+            "larceny",
+            "stealth",
+            "survival"
+          ]
+        },
+        "social": {
+          "type": "object",
+          "properties": {
+            "animal_ken": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5
+            },
+            "etiquette": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5
+            },
+            "insight": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5
+            },
+            "intimidation": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5
+            },
+            "leadership": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5
+            },
+            "performance": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5
+            },
+            "persuasion": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5
+            },
+            "streetwise": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5
+            },
+            "subterfuge": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5
+            }
+          },
+          "required": [
+            "animal_ken",
+            "etiquette",
+            "insight",
+            "intimidation",
+            "leadership",
+            "performance",
+            "persuasion",
+            "streetwise",
+            "subterfuge"
+          ]
+        },
+        "mental": {
+          "type": "object",
+          "properties": {
+            "academics": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5
+            },
+            "awareness": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5
+            },
+            "finance": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5
+            },
+            "investigation": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5
+            },
+            "medicine": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5
+            },
+            "occult": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5
+            },
+            "politics": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5
+            },
+            "science": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5
+            },
+            "technology": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5
+            }
+          },
+          "required": [
+            "academics",
+            "awareness",
+            "finance",
+            "investigation",
+            "medicine",
+            "occult",
+            "politics",
+            "science",
+            "technology"
+          ]
+        }
+      },
+      "required": [
+        "physical",
+        "social",
+        "mental"
+      ]
+    },
+    "disciplines": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "enum": [
+              "Animalism",
+              "Auspex",
+              "Blood Sorcery",
+              "Celerity",
+              "Dominate",
+              "Fortitude",
+              "Obfuscate",
+              "Potence",
+              "Presence",
+              "Protean"
+            ],
+            "description": "The name of the discipline, restricted to the predefined list of valid disciplines."
+          },
+          "level": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5,
+            "description": "Current mastery level of the discipline."
+          },
+          "powers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "The name of the discipline power."
+                },
+                "level": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "maximum": 5,
+                  "description": "The level at which this power becomes available."
+                },
+                "description": {
+                  "type": "string",
+                  "description": "A brief description of the power's effects."
+                }
+              },
+              "required": [
+                "name",
+                "level"
+              ]
+            },
+            "description": "List of powers available at the given level."
+          }
+        },
+        "required": [
+          "name",
+          "level",
+          "powers"
+        ],
+        "if": {
+          "properties": {
+            "name": {
+              "const": "Protean"
+            }
+          }
+        },
+        "then": {
+          "properties": {
+            "powers": {
+              "items": {
+                "properties": {
+                  "name": {
+                    "enum": [
+                      "Eyes of the Beast",
+                      "Weight of the Feather",
+                      "Feral Weapons",
+                      "Earth Meld",
+                      "Metamorphosis",
+                      "Shapechange",
+                      "Unnatural Vigor",
+                      "Mist Form",
+                      "Dragon Claws",
+                      "Primeval Miasma"
+                    ],
+                    "description": "The name of the Protean power."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "else": {
+          "if": {
+            "properties": {
+              "name": {
+                "const": "Presence"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "powers": {
+                "items": {
+                  "properties": {
+                    "name": {
+                      "enum": [
+                        "Awe",
+                        "Daunt",
+                        "Entrancement",
+                        "Dread Gaze",
+                        "Lingering Kiss",
+                        "Irresistible Voice",
+                        "Summon",
+                        "Unknowing Whispers",
+                        "Majesty",
+                        "Love"
+                      ],
+                      "description": "The name of the Presence power."
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "else": {
+            "if": {
+              "properties": {
+                "name": {
+                  "const": "Animalism"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "powers": {
+                  "items": {
+                    "properties": {
+                      "name": {
+                        "enum": [
+                          "Bond Famulus",
+                          "Feral Whispers",
+                          "Unliving Hive",
+                          "Subsume the Spirit",
+                          "Animal Succulence"
+                        ],
+                        "description": "The name of the Animalism power."
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "backgrounds": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "integer",
+        "description": "Level of the background, from 1 to 5."
+      },
+      "description": "A mapping of backgrounds to their levels."
+    },
+    "advantages": {
+      "type": "object",
+      "properties": {
+        "merits": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "description": "Name of a merit."
+          },
+          "description": "List of merits the character has."
+        },
+        "flaws": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "description": "Name of a flaw."
+          },
+          "description": "List of flaws the character has."
+        }
+      },
+      "required": [
+        "merits",
+        "flaws"
+      ]
+    },
+    "health": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10,
+      "description": "Current health level."
+    },
+    "willpower": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 10,
+      "description": "Current willpower level."
+    },
+    "hunger": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 5,
+      "description": "Current hunger level."
+    },
+    "blood_potency": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 5,
+      "description": "The vampire's blood potency level."
+    },
+    "humanity": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 10,
+      "description": "The character's current humanity."
+    },
+    "chronicle": {
+      "type": "string",
+      "description": "The name of the chronicle this character is a part of."
+    },
+    "ambition": {
+      "type": "string",
+      "description": "The character's ambition, their long-term goal."
+    },
+    "desires": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "description": "A desire or goal the character seeks to fulfill."
+      },
+      "description": "List of desires the character has."
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

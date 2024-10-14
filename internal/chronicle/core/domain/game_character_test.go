@@ -1,10 +1,10 @@
 package domain_test
 
 import (
-	"encoding/json"
 	"testing"
 
 	"github.com/SomethingSexy/chronicle/internal/chronicle/core/domain"
+	"github.com/goccy/go-json"
 )
 
 func TestGameCharacter_Validate_Valid(t *testing.T) {
@@ -16,7 +16,7 @@ func TestGameCharacter_Validate_Valid(t *testing.T) {
 		t.Fatalf("Failed to unmarshal test cases: %v", err)
 	}
 
-	gameCharacter := domain.GameCharacter{
+	gameCharacter := domain.GameCharacter[any]{
 		Data: data,
 	}
 
@@ -32,45 +32,19 @@ func TestGameCharacter_Validate_Valid(t *testing.T) {
 }
 
 func TestGameCharacter_Validate_Disciplines_Valid(t *testing.T) {
-	// {
-	// 	"name": "Protean",
-	// 	"level": 3,
-	// 	"powers": [
-	// 		{
-	// 			"name": "Eyes of the Beast",
-	// 			"level": 1,
-	// 			"description": "See perfectly in total darkness with glowing red eyes."
-	// 		},
-	// 		{
-	// 			"name": "Feral Weapons",
-	// 			"level": 2,
-	// 			"description": "Grow claws or fangs, gaining lethal unarmed attacks."
-	// 		},
-	// 		{
-	// 			"name": "Metamorphosis",
-	// 			"level": 3,
-	// 			"description": "Transform your body to gain animal-like characteristics."
-	// 		}
-	// 	]
-	// },
-	var data interface{}
-
-	if err := json.Unmarshal([]byte(`{
-		"name": "John Doe",
-		"disciplines": [{
-		  "name": "Protean",
-			"level": 1,
-			"powers": [{
-	 			"name": "Eyes of the Beast",
-	 			"description": "See perfectly in total darkness with glowing red eyes."
-	 		}]
-		}]
-	}`), &data); err != nil {
-		t.Fatalf("Failed to unmarshal test cases: %v", err)
-	}
-
-	gameCharacter := domain.GameCharacter{
-		Data: data,
+	gameCharacter := domain.GameCharacter[domain.VtmGameCharacter]{
+		Data: domain.VtmGameCharacter{
+			Name: "John Doe",
+			Disciplines: []domain.Discipline{{
+				Name:  "Protean",
+				Level: 1,
+				Powers: []domain.Power{{
+					Name:        "Eyes of the Beast",
+					Level:       1,
+					Description: "See perfectly in total darkness with glowing red eyes.",
+				}},
+			}},
+		},
 	}
 
 	valid, err := gameCharacter.Validate()

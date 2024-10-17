@@ -7,14 +7,10 @@ import (
 	"github.com/kaptinlin/jsonschema"
 )
 
-type GameCharacterValidator interface {
-	Schema() ([]byte, error)
-}
-
 // This should probably be generic, need to
 // test this against the schema compiler though.
 // Maybe after it is valid, we can marshall to a strict type
-type GameCharacter[D GameCharacterValidator] struct {
+type GameCharacter[D Validator] struct {
 	Data D
 	Type GameType
 }
@@ -36,7 +32,6 @@ func (g GameCharacter[D]) Validate() (bool, error) {
 	// For now we are going to marshall and unmarshall back into
 	// a generic interface of maps so we can validate the schema
 	// Hide it all here
-	log.Println(g.Data)
 	dataAsByte, err := json.Marshal(g.Data)
 	if err != nil {
 		return false, err

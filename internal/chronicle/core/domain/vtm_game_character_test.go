@@ -1,15 +1,14 @@
-package game_test
+package domain_test
 
 import (
 	"testing"
 
 	"github.com/SomethingSexy/chronicle/internal/chronicle/core/domain"
-	"github.com/SomethingSexy/chronicle/internal/chronicle/core/domain/game"
 )
 
 func TestGameCharacter_Validate_Valid(t *testing.T) {
-	gameCharacter := domain.GameCharacter[game.VtmGameCharacter]{
-		Data: game.VtmGameCharacter{
+	gameCharacter := domain.GameCharacter[domain.VtmGameCharacter]{
+		Data: domain.VtmGameCharacter{
 			Name: "John Doe",
 		},
 	}
@@ -26,13 +25,13 @@ func TestGameCharacter_Validate_Valid(t *testing.T) {
 }
 
 func TestGameCharacter_Validate_Disciplines_Valid(t *testing.T) {
-	gameCharacter := domain.GameCharacter[game.VtmGameCharacter]{
-		Data: game.VtmGameCharacter{
+	gameCharacter := domain.GameCharacter[domain.VtmGameCharacter]{
+		Data: domain.VtmGameCharacter{
 			Name: "John Doe",
-			Disciplines: []game.Discipline{{
+			Disciplines: []domain.Discipline{{
 				Name:  "Protean",
 				Level: 1,
-				Powers: []game.Power{{
+				Powers: []domain.Power{{
 					Name:        "Eyes of the Beast",
 					Level:       1,
 					Description: "See perfectly in total darkness with glowing red eyes.",

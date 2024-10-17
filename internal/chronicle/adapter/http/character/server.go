@@ -30,8 +30,8 @@ func (h CharacterHttpServer) Routes() chi.Router {
 }
 
 func (h CharacterHttpServer) CreateCharacter(w http.ResponseWriter, r *http.Request) {
-	data := &CharacterRequest{}
-	if err := render.Bind(r, data); err != nil {
+	data, err := NewCharacterRequest(r.Body)
+	if err != nil {
 		render.Render(w, r, common.ErrInvalidRequest(err))
 		return
 	}

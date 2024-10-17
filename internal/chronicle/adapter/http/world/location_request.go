@@ -2,13 +2,15 @@ package world
 
 import (
 	"errors"
+	"io"
 	"net/http"
 
 	"github.com/SomethingSexy/chronicle/internal/chronicle/core/domain"
+	"github.com/google/jsonapi"
 	"github.com/google/uuid"
 )
 
-func NewLocationRequest(l domain.Location) LocationRequest {
+func NewLocationResponse(l domain.Location) LocationRequest {
 	paths := make([]string, len(l.Path))
 	for x, path := range l.Path {
 		paths[x] = path.String()
@@ -22,6 +24,15 @@ func NewLocationRequest(l domain.Location) LocationRequest {
 		Type:       l.Type,
 		Path:       paths,
 	}
+}
+
+func NewLocationRequest(body io.ReadCloser) (LocationRequest, error) {
+	var model LocationRequest
+	if err := jsonapi.UnmarshalPayload(body, &model); err != nil {
+		return model, err
+	}
+
+	return model, nil
 }
 
 type LocationRequest struct {

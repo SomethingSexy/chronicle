@@ -2,15 +2,19 @@ package game
 
 import (
 	"errors"
+	"io"
 	"net/http"
 
 	"github.com/SomethingSexy/chronicle/internal/chronicle/adapter/http/world"
 	"github.com/SomethingSexy/chronicle/internal/chronicle/core/domain"
+	"github.com/google/jsonapi"
 	"github.com/google/uuid"
 )
 
-func NewGameRequest(g domain.Game) GameRequest {
-	worldRquest := world.NewWorldRequest(g.World)
+// Given a domain, return a GameRequest that will be used
+// as a response payload.
+func NewGameResponse(g domain.Game) GameRequest {
+	worldRquest := world.NewWorldResponse(g.World)
 
 	return GameRequest{
 		ID:      g.GameId.String(),
@@ -20,6 +24,15 @@ func NewGameRequest(g domain.Game) GameRequest {
 		Type:    g.Type.String(),
 		World:   &worldRquest,
 	}
+}
+
+func NewGameRequest(body io.ReadCloser) (GameRequest, error) {
+	var model GameRequest
+	if err := jsonapi.UnmarshalPayload(body, &model); err != nil {
+		return model, err
+	}
+
+	return model, nil
 }
 
 type GameRequest struct {

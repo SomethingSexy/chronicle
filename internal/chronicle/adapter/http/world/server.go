@@ -27,10 +27,6 @@ type GameHttpServer struct {
 func (h GameHttpServer) Routes() chi.Router {
 	r := chi.NewRouter()
 
-	// TODO: This is obviously going to get huge
-	// we need to decide how to organize these route handlers
-	// Either at this level or a higher level to apply
-	// relationships to root routes.
 	r.Post("/", h.CreateWorld)
 	r.Get("/{worldId}", h.GetWorld)
 
@@ -41,14 +37,15 @@ func (h GameHttpServer) Routes() chi.Router {
 	r.Post("/{worldId}/relationships/characters", h.AddWorldCharacter)
 	// Using this format right now for patching a character that has been linked to a world
 	// This might not be correct and instead it could include "world-characters"
-	r.Patch("/{worldId}/characters/{characterId}", h.AddWorldCharacter)
+	// TODO: I don't think we need this anymore
+	// r.Patch("/{worldId}/characters/{characterId}", h.AddWorldCharacter)
 
 	return r
 }
 
 func (h GameHttpServer) CreateWorld(w http.ResponseWriter, r *http.Request) {
-	data := &WorldRequest{}
-	if err := render.Bind(r, data); err != nil {
+	data, err := NewWorldRequest(r.Body)
+	if err != nil {
 		render.Render(w, r, common.ErrInvalidRequest(err))
 		return
 	}
@@ -74,7 +71,7 @@ func (h GameHttpServer) GetWorld(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	worldRquest := NewWorldRequest(world)
+	worldRquest := NewWorldResponse(world)
 
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", jsonapi.MediaType)
@@ -85,8 +82,8 @@ func (h GameHttpServer) GetWorld(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h GameHttpServer) CreateLocation(w http.ResponseWriter, r *http.Request) {
-	data := &LocationRequest{}
-	if err := render.Bind(r, data); err != nil {
+	data, err := NewLocationRequest(r.Body)
+	if err != nil {
 		render.Render(w, r, common.ErrInvalidRequest(err))
 		return
 	}
@@ -114,7 +111,7 @@ func (h GameHttpServer) GetLocations(w http.ResponseWriter, r *http.Request) {
 
 	responses := make([]*LocationRequest, len(locations))
 	for i, location := range locations {
-		locationRequest := NewLocationRequest(location)
+		locationRequest := NewLocationResponse(location)
 		responses[i] = &locationRequest
 	}
 
@@ -128,8 +125,8 @@ func (h GameHttpServer) GetLocations(w http.ResponseWriter, r *http.Request) {
 
 func (h GameHttpServer) AddWorldCharacter(w http.ResponseWriter, r *http.Request) {
 	worldId := chi.URLParam(r, "worldId")
-	data := &AddWorldCharacterRequest{}
-	if err := render.Bind(r, data); err != nil {
+	data, err := NewAddWorldCharacterRequest(r.Body)
+	if err != nil {
 		render.Render(w, r, common.ErrInvalidRequest(err))
 		return
 	}

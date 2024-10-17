@@ -1,7 +1,6 @@
 package game
 
 import (
-	"log"
 	"net/http"
 
 	corePort "github.com/SomethingSexy/chronicle/internal/chronicle/core/port"
@@ -35,8 +34,8 @@ func (h GameHttpServer) Routes() chi.Router {
 }
 
 func (h GameHttpServer) CreateGame(w http.ResponseWriter, r *http.Request) {
-	data := &GameRequest{}
-	if err := render.Bind(r, data); err != nil {
+	data, err := NewGameRequest(r.Body)
+	if err != nil {
 		render.Render(w, r, common.ErrInvalidRequest(err))
 		return
 	}
@@ -60,7 +59,7 @@ func (h GameHttpServer) ListGames(w http.ResponseWriter, r *http.Request) {
 
 	responses := make([]*GameRequest, len(games))
 	for i, game := range games {
-		gameRequest := NewGameRequest((game))
+		gameRequest := NewGameResponse((game))
 		responses[i] = &gameRequest
 	}
 
@@ -84,8 +83,7 @@ func (h GameHttpServer) GetGame(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Println(game)
-	gameRequest := NewGameRequest(game)
+	gameRequest := NewGameResponse(game)
 
 	w.WriteHeader(http.StatusOK)
 	w.Header().Set("Content-Type", jsonapi.MediaType)

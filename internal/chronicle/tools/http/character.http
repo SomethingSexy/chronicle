@@ -10,7 +10,7 @@ Content-Type: application/vnd.api+json
         "type": "characters",
         "attributes": {
             "characterId": "{{characterId}}",
-            "name": "Mr. Foo",
+            "name": "Mr. Foo Bar",
             "description": "I am a big foo."
         }
     }

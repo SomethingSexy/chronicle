@@ -1,4 +1,4 @@
-package game
+package domain
 
 import (
 	"os"
@@ -23,5 +23,5 @@ type Power struct {
 }
 
 func (g VtmGameCharacter) Schema() ([]byte, error) {
-	return os.ReadFile("./vtm_v5_character_schema.json")
+	return os.ReadFile("./schema/vtm_v5_character_schema.json")
 }

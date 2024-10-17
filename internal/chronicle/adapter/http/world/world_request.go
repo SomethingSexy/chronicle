@@ -2,23 +2,25 @@ package world
 
 import (
 	"errors"
+	"io"
 	"net/http"
 
 	"github.com/SomethingSexy/chronicle/internal/chronicle/adapter/http/character"
 	"github.com/SomethingSexy/chronicle/internal/chronicle/core/domain"
+	"github.com/google/jsonapi"
 	"github.com/google/uuid"
 )
 
-func NewWorldRequest(w domain.World) WorldRequest {
+func NewWorldResponse(w domain.World) WorldRequest {
 	locations := make([]*LocationRequest, len(w.Locations))
 	for i, location := range w.Locations {
-		locationRequest := NewLocationRequest(location)
+		locationRequest := NewLocationResponse(location)
 		locations[i] = &locationRequest
 	}
 
 	characters := make([]*character.CharacterRequest, len(w.Characters))
 	for i, c := range w.Characters {
-		characterRequest := character.NewCharacterRequest(c)
+		characterRequest := character.NewCharacterResponse(c)
 		characters[i] = &characterRequest
 	}
 
@@ -29,6 +31,15 @@ func NewWorldRequest(w domain.World) WorldRequest {
 		Locations:  locations,
 		Characters: characters,
 	}
+}
+
+func NewWorldRequest(body io.ReadCloser) (WorldRequest, error) {
+	var model WorldRequest
+	if err := jsonapi.UnmarshalPayload(body, &model); err != nil {
+		return model, err
+	}
+
+	return model, nil
 }
 
 type WorldRequest struct {

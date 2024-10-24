@@ -17,18 +17,16 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
-func NewService() {
+func NewService() error {
 	// TODO: This shold probably come from the adapter instead
 	psqlConnStr := os.Getenv("DATABASE_URL")
 	db, err := pgxpool.New(context.Background(), psqlConnStr)
-
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Unable to connect to database: %v\n", err)
-		os.Exit(1)
+		return fmt.Errorf("Unable to connect to database: %v\n", err)
 	}
+
 	q := repository.New(db)
 
-	// TODO: We will need to create these individally as we add and merge together
 	persistence := port.Persistence{
 		Game:      query.NewGameQuery(q),
 		Character: query.NewCharacterQuery(q),
@@ -43,7 +41,7 @@ func NewService() {
 
 	httpServer := http.NewHttpServer(service)
 
-	httpServer.Start()
+	return httpServer.Start()
 }
 
 type ChronicleService struct {
@@ -51,6 +49,7 @@ type ChronicleService struct {
 }
 
 func (c ChronicleService) Routes() map[string][]chi.Router {
+	// TODO: This could probably get created in the adapter itself, less this package needs to import
 	gameHttpServer := game.NewGameHttpServer(c.ChronicleApplication.Commands.GameCommands, c.ChronicleApplication.Queries.GameQueries)
 	gameRoutes := gameHttpServer.Routes()
 

@@ -20,6 +20,7 @@ type GamePersistence interface {
 	ListGames(ctx context.Context) ([]domain.Game, error)
 	GetGame(ctx context.Context, id uuid.UUID) (domain.Game, error)
 	GetGameWorld(ctx context.Context, gameId uuid.UUID) (domain.World, error)
+	UpdateCharacter(ctx context.Context, gameId uuid.UUID, characterId uuid.UUID, character domain.GameCharacter) error
 }
 
 type CharacterPersistence interface {
@@ -34,5 +35,5 @@ type WorldPersistence interface {
 	ListLocations(ctx context.Context, worldId uuid.UUID) ([]domain.Location, error)
 
 	ListCharacters(ctx context.Context, worldId uuid.UUID) ([]domain.Character, error)
-	UpsertCharacterToGameWorld(ctx context.Context, worldId uuid.UUID, characterId uuid.UUID, character *domain.WorldCharacter) error
+	AddCharacterToGameWorld(ctx context.Context, worldId uuid.UUID, characterId uuid.UUID) error
 }

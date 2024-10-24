@@ -2,11 +2,11 @@ package query
 
 import (
 	"context"
-	"log"
 	"time"
 
 	"github.com/SomethingSexy/chronicle/internal/chronicle/adapter/persistence/postgres/sqlc/repository"
 	"github.com/SomethingSexy/chronicle/internal/chronicle/core/domain"
+	"github.com/goccy/go-json"
 	"github.com/google/uuid"
 	"github.com/jackc/pgx/v5/pgtype"
 )
@@ -87,8 +87,6 @@ func (g GameQuery) GetGame(ctx context.Context, id uuid.UUID) (domain.Game, erro
 		return domain.Game{}, err
 	}
 
-	log.Println(response.Type, domain.NewGameType(response.Type))
-
 	game := domain.Game{
 		Name:    response.Name,
 		Type:    domain.NewGameType(response.Type),
@@ -111,4 +109,38 @@ func (g GameQuery) GetGameWorld(ctx context.Context, gameId uuid.UUID) (domain.W
 	}
 
 	return world, nil
+}
+
+func (g GameQuery) UpdateCharacter(ctx context.Context, gameId uuid.UUID, characterId uuid.UUID, gameCharacter domain.GameCharacter) error {
+	game, err := g.Queries.GetGameFromUuid(ctx, gameId)
+	if err != nil {
+		return err
+	}
+
+	character, err := g.Queries.GetCharacterFromUuid(ctx, characterId)
+	if err != nil {
+		return err
+	}
+
+	characterJsonB, err := json.Marshal(gameCharacter.Data())
+	if err != nil {
+		return err
+	}
+
+	ts := pgtype.Timestamptz{
+		Time:  time.Now(),
+		Valid: true,
+	}
+
+	return g.Queries.UpdateGameCharacter(ctx, repository.UpdateGameCharacterParams{
+		// Generating here when it first gets created, otherwise this doeesn't change
+		// It isn't used right now but just in case it is required in the future
+		GameCharacterID: uuid.New(),
+		GameID:          game.ID,
+		CharacterID:     character.ID,
+		CharacterType:   gameCharacter.Type().String(),
+		Character:       characterJsonB,
+		CreatedAt:       ts,
+		UpdatedAt:       ts,
+	})
 }

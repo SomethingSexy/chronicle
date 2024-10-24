@@ -21,7 +21,7 @@
       "type": "string",
       "description": "A brief description of the character's concept or archetype."
     },
-    "predator_type": {
+    "predatorType": {
       "type": "string",
       "description": "The character's predator type, reflecting how they feed."
     },
@@ -535,6 +535,6 @@
     }
   },
   "required": [
-    "name"
+    "clan"
   ]
 }

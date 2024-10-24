@@ -1,9 +1,9 @@
 
 @gameId = 0be09611-1e65-44f8-a103-883cfaccf1aa
 @worldId = 56e64eee-ab55-4ce1-a255-1b8b20ac78cb
+@characterId = a751b19a-ef91-4274-85d2-850569a6ee08
 
 # @name create_game
-
 POST http://localhost:3000/games
 Content-Type: application/vnd.api+json
 
@@ -24,11 +24,31 @@ Content-Type: application/vnd.api+json
 # @name get_game
 GET http://localhost:3000/games/{{gameId}}
 Content-Type: application/vnd.api+json
-
 ###
 
 # @name list
 GET http://localhost:3000/games
 Content-Type: application/vnd.api+json
+###
+
+
+# @name update_game_character
+POST http://localhost:3000/games/{{gameId}}/characters
+Content-Type: application/vnd.api+json
+
+{
+    "data": {
+        "type": "game-characters",
+        "attributes": {
+            "gameId": "{{gameId}}",
+            "characterId": "{{characterId}}",
+            "character": {
+                "clan": "Gangrel",
+                "sire": "Bob"
+            },
+            "type": "npc"
+        }
+    }
+}
 
 ###

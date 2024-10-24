@@ -12,6 +12,10 @@ import (
 
 var ContentTypeJsonApi = "application/vnd.api+json"
 
+type Parser interface {
+	Parse()
+}
+
 type HttpServer struct {
 	app common.Service
 }
@@ -24,7 +28,7 @@ func NewHttpServer(application common.Service) HttpServer {
 	}
 }
 
-func (h HttpServer) Start() {
+func (h HttpServer) Start() error {
 	// This should be responsible for running and starting the http service but it should be given the routes
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
@@ -36,7 +40,7 @@ func (h HttpServer) Start() {
 	r.Mount("/characters", h.app.Routes()["Characters"][0])
 	r.Mount("/worlds", h.app.Routes()["Worlds"][0])
 
-	http.ListenAndServe(":3000", r)
+	return http.ListenAndServe(":3000", r)
 }
 
 func DefaultDecoder(r *http.Request, v interface{}) error {

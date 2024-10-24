@@ -29,6 +29,10 @@ func (h GameHttpServer) Routes() chi.Router {
 	r.Post("/", h.CreateGame)
 	r.Get("/", h.ListGames)
 	r.Get("/{gameId}", h.GetGame)
+	// Not running this one as a relationship because
+	// the character is technically already part of the game from the world
+	// but this would be expanding on details for that character
+	r.Post("/{gameId}/characters", h.UpdateGameCharacter)
 
 	return r
 }
@@ -91,4 +95,19 @@ func (h GameHttpServer) GetGame(w http.ResponseWriter, r *http.Request) {
 		render.Render(w, r, common.ErrInvalidRequest(err))
 		return
 	}
+}
+
+func (h GameHttpServer) UpdateGameCharacter(w http.ResponseWriter, r *http.Request) {
+	data, err := NewGameCharacterRequest(r.Body)
+	if err != nil {
+		render.Render(w, r, common.ErrInvalidRequest(err))
+		return
+	}
+
+	if err := h.commands.UpdateGameCharacter.Handle(r.Context(), data.ToDomain()); err != nil {
+		render.Render(w, r, common.ErrInvalidRequest(err))
+		return
+	}
+
+	render.Status(r, http.StatusCreated)
 }

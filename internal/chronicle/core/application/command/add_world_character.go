@@ -23,5 +23,5 @@ type addWorldCharacterHandler struct {
 func (c addWorldCharacterHandler) Handle(ctx context.Context, cmd corePort.AddWorldCharacter) error {
 	log.Printf("Adding character %s to world %s", cmd.CharacterId, cmd.WorldId)
 
-	return c.Persistence.UpsertCharacterToGameWorld(ctx, cmd.WorldId, cmd.CharacterId, nil)
+	return c.Persistence.AddCharacterToGameWorld(ctx, cmd.WorldId, cmd.CharacterId)
 }

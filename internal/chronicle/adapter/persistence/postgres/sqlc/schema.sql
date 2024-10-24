@@ -1,4 +1,4 @@
-
+CREATE EXTENSION "ltree";
 
 -- Represents a generic world that can be linked to many games
 CREATE TABLE world (
@@ -20,7 +20,7 @@ CREATE TABLE location (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-create index location_world_id on location(world_id);
+create index location_world_id_idx on location(world_id);
 create index location_path_idx on location using gist(path);
 
 CREATE TABLE character (
@@ -37,7 +37,6 @@ CREATE TABLE world_character (
   world_character_id uuid UNIQUE NOT NULL,
   character_id BIGSERIAL NOT NULL REFERENCES character(id),
   world_id BIGSERIAL NOT NULL REFERENCES world(id),
-  character_type text,
   created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
@@ -55,4 +54,20 @@ CREATE TABLE game (
   updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-create index game_world_id on game(game_id);
+create index game_world_id_idx on game(game_id);
+
+CREATE TABLE game_character (
+  id   BIGSERIAL PRIMARY KEY,
+  game_character_id uuid UNIQUE NOT NULL,
+  game_id BIGSERIAL NOT NULL REFERENCES game(id),
+  character_id BIGSERIAL NOT NULL REFERENCES character(id),
+  character_type text      NOT NULL,
+  character JSONB,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);
+
+create index game_character_game_character_id_idx on game_character(game_character_id);
+create index game_character_game_id_idx on game(id);
+create index game_character_character_id_idx on character(id);
+create unique index game_character_character_id_game_id_idx on game_character(character_id,game_id);

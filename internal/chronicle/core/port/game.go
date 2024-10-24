@@ -20,3 +20,11 @@ type GetGameQuery struct {
 	GameId uuid.UUID
 }
 type GetGameHandler common.QueryHandler[GetGameQuery, domain.Game]
+
+type UpdateGameCharacter struct {
+	GameId      uuid.UUID
+	CharacterId uuid.UUID
+	Type        domain.CharacterType
+	Character   map[string]interface{}
+}
+type UpdateGameCharacterHandler common.CommandHandler[UpdateGameCharacter]

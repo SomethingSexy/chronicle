@@ -2,6 +2,7 @@ package main
 
 import (
 	"log"
+	"os"
 
 	chronicleService "github.com/SomethingSexy/chronicle/internal/chronicle/service"
 	"github.com/joho/godotenv"
@@ -13,6 +14,10 @@ func main() {
 		log.Fatal("Error loading .env file")
 	}
 
-	chronicleService.NewService()
+	err = chronicleService.NewService()
+	if err != nil {
+		log.Println("Error starting service", err)
+		os.Exit(1)
+	}
 	log.Println("Service running")
 }

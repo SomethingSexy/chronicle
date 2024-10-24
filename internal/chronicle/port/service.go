@@ -23,9 +23,9 @@ type ChronicleQueries struct {
 }
 
 type GameCommands struct {
-	CreateGame        corePort.CreateGameHander
-	CreateLocation    corePort.CreateLocationHander
-	AddWorldCharacter corePort.AddWorldCharacterHandler
+	CreateGame          corePort.CreateGameHander
+	CreateLocation      corePort.CreateLocationHander
+	UpdateGameCharacter corePort.UpdateGameCharacterHandler
 }
 
 type GameQueries struct {

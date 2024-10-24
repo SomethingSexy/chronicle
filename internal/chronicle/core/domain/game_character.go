@@ -1,58 +1,53 @@
 package domain
 
-import (
-	"log"
+import "github.com/google/uuid"
 
-	"github.com/goccy/go-json"
-	"github.com/kaptinlin/jsonschema"
-)
+// TODO: How should we handle invalid types here?
+func NewGameCharacter(
+	gameType GameType,
+	characterId uuid.UUID,
+	characterType CharacterType,
+	character map[string]interface{},
+) GameCharacter {
+	var gameCharacter GameCharacter
+	if gameType == VTM {
+		gameCharacter = NewVtmGameCharacter(characterType, character)
+	}
+
+	return gameCharacter
+}
 
 // This should probably be generic, need to
 // test this against the schema compiler though.
 // Maybe after it is valid, we can marshall to a strict type
-type GameCharacter[D Validator] struct {
-	Data D
-	Type GameType
+// type GameCharacter[D Schema] struct {
+// 	Data D
+// 	Type GameType
+// }
+
+type GameCharacter interface {
+	Validator
+	Type() CharacterType
 }
 
-func (g GameCharacter[D]) Validate() (bool, error) {
-	characterSchema, err := g.Data.Schema()
-	if err != nil {
-		return false, err
+func NewCharacterType(t string) CharacterType {
+	switch t {
+	case "npc":
+		return NPC
+	case "pc":
+		return PC
 	}
 
-	compiler := jsonschema.NewCompiler()
-	schema, err := compiler.Compile(characterSchema)
-	if err != nil {
-		return false, err
-	}
+	return NPC
+}
 
-	// Need to figure this out but I believe the validator
-	// requires it to be a map of interfaces.
-	// For now we are going to marshall and unmarshall back into
-	// a generic interface of maps so we can validate the schema
-	// Hide it all here
-	dataAsByte, err := json.Marshal(g.Data)
-	if err != nil {
-		return false, err
-	}
+type CharacterType int
 
-	var dataAsInterface interface{}
-	err = json.Unmarshal(dataAsByte, &dataAsInterface)
-	if err != nil {
-		return false, err
-	}
+const (
+	NPC = iota
+	PC
+)
 
-	result := schema.Validate(dataAsInterface)
-	if !result.IsValid() {
-		log.Println(result)
-		// details, err := json.MarshalIndent(result.ToList(), "", "  ")
-		// if err != nil {
-		// 	return false, err
-		// }
-		// fmt.Println(string(details))
-		return false, nil
-	}
-
-	return true, nil
+func (t CharacterType) String() string {
+	return [...]string{"npc", "pc"}[t]
 }

@@ -28,6 +28,17 @@ type Game struct {
 	UpdatedAt pgtype.Timestamptz
 }
 
+type GameCharacter struct {
+	ID              int64
+	GameCharacterID uuid.UUID
+	GameID          int64
+	CharacterID     int64
+	CharacterType   string
+	Character       []byte
+	CreatedAt       pgtype.Timestamptz
+	UpdatedAt       pgtype.Timestamptz
+}
+
 type Location struct {
 	ID         int64
 	LocationID uuid.UUID
@@ -52,7 +63,6 @@ type WorldCharacter struct {
 	WorldCharacterID uuid.UUID
 	CharacterID      int64
 	WorldID          int64
-	CharacterType    pgtype.Text
 	CreatedAt        pgtype.Timestamptz
 	UpdatedAt        pgtype.Timestamptz
 }

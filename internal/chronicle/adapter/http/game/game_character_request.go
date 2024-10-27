@@ -2,7 +2,6 @@ package game
 
 import (
 	"io"
-	"log"
 
 	"github.com/SomethingSexy/chronicle/internal/chronicle/core/domain"
 	"github.com/SomethingSexy/chronicle/internal/chronicle/core/port"
@@ -37,8 +36,13 @@ func NewGameCharacterRequest(body io.ReadCloser) (GameCharacterRequest, error) {
 	return model, nil
 }
 
-func NewGameCharacterResponse() {
-
+func NewGameCharacterResponse(gameCharacter domain.GameCharacter) GameCharacterRequest {
+	return GameCharacterRequest{
+		ID:          gameCharacter.GetId().String(),
+		CharacterId: gameCharacter.GetCharacterId().String(),
+		Character:   gameCharacter.GetData(),
+		Type:        gameCharacter.GetType().String(),
+	}
 }
 
 // A request to update a character tied to game through a
@@ -56,7 +60,6 @@ type GameCharacterRequest struct {
 // directly.  We can't convert to the domain because we don't know the type
 // yet.  Decide in the future if this is a good idea or not
 func (g GameCharacterRequest) ToDomain() port.UpdateGameCharacter {
-	log.Println(g)
 	return port.UpdateGameCharacter{
 		GameId:      uuid.MustParse(g.GameId),
 		CharacterId: uuid.MustParse(g.CharacterId),

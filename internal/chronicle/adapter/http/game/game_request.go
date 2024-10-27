@@ -15,14 +15,20 @@ import (
 // as a response payload.
 func NewGameResponse(g domain.Game) GameRequest {
 	worldRquest := world.NewWorldResponse(g.World)
+	characters := make([]*GameCharacterRequest, len(g.Characters))
+	for i, character := range g.Characters {
+		characterResponse := NewGameCharacterResponse(character)
+		characters[i] = &characterResponse
+	}
 
 	return GameRequest{
-		ID:      g.GameId.String(),
-		GameId:  g.GameId.String(),
-		WorldId: g.WorldId.String(),
-		Name:    g.Name,
-		Type:    g.Type.String(),
-		World:   &worldRquest,
+		ID:         g.GameId.String(),
+		GameId:     g.GameId.String(),
+		WorldId:    g.WorldId.String(),
+		Name:       g.Name,
+		Type:       g.Type.String(),
+		World:      &worldRquest,
+		Characters: characters,
 	}
 }
 
@@ -36,12 +42,13 @@ func NewGameRequest(body io.ReadCloser) (GameRequest, error) {
 }
 
 type GameRequest struct {
-	ID      string              `jsonapi:"primary,games"`
-	GameId  string              `jsonapi:"attr,gameId"`
-	WorldId string              `jsonapi:"attr,worldId"`
-	Name    string              `jsonapi:"attr,name"`
-	Type    string              `jsonapi:"attr,type"`
-	World   *world.WorldRequest `jsonapi:"relation,worlds"`
+	ID         string                  `jsonapi:"primary,games"`
+	GameId     string                  `jsonapi:"attr,gameId"`
+	WorldId    string                  `jsonapi:"attr,worldId"`
+	Name       string                  `jsonapi:"attr,name"`
+	Type       string                  `jsonapi:"attr,type"`
+	World      *world.WorldRequest     `jsonapi:"relation,worlds"`
+	Characters []*GameCharacterRequest `jsonapi:"relation,characters"`
 }
 
 func (a *GameRequest) Bind(r *http.Request) error {

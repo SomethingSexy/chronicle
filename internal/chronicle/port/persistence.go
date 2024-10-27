@@ -21,6 +21,7 @@ type GamePersistence interface {
 	GetGame(ctx context.Context, id uuid.UUID) (domain.Game, error)
 	GetGameWorld(ctx context.Context, gameId uuid.UUID) (domain.World, error)
 	UpdateCharacter(ctx context.Context, gameId uuid.UUID, characterId uuid.UUID, character domain.GameCharacter) error
+	ListCharacters(ctx context.Context, gameId uuid.UUID) ([]domain.GameCharacter, error)
 }
 
 type CharacterPersistence interface {

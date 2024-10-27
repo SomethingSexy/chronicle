@@ -7,8 +7,8 @@ import (
 )
 
 type Validator interface {
-	Data() any
-	Schema() ([]byte, error)
+	GetData() map[string]interface{}
+	GetSchema() ([]byte, error)
 }
 
 // General validation function that process a struct
@@ -16,7 +16,7 @@ type Validator interface {
 //
 // TODO: This could just return an error
 func Validate(t Validator) (bool, error) {
-	typeSchema, err := t.Schema()
+	typeSchema, err := t.GetSchema()
 	if err != nil {
 		return false, err
 	}
@@ -43,7 +43,7 @@ func Validate(t Validator) (bool, error) {
 	// 	return false, err
 	// }
 
-	result := schema.Validate(t.Data())
+	result := schema.Validate(t.GetData())
 	if !result.IsValid() {
 		log.Println(result)
 		// TODO: Need to figure out what we are going to actually return here

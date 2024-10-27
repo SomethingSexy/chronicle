@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/SomethingSexy/chronicle/internal/chronicle/core/domain"
+	"github.com/google/uuid"
 )
 
 func TestGameCharacter_Validate_Valid(t *testing.T) {
@@ -12,7 +13,7 @@ func TestGameCharacter_Validate_Valid(t *testing.T) {
 	// 		Name: "John Doe",
 	// 	},
 	// }
-	gameCharacter := domain.NewVtmGameCharacter(domain.VTM, map[string]interface{}{
+	gameCharacter := domain.NewVtmGameCharacter(uuid.New(), uuid.New(), domain.VTM, map[string]interface{}{
 		"name": "John Doe",
 	})
 
@@ -43,7 +44,7 @@ func TestGameCharacter_Validate_Disciplines_Valid(t *testing.T) {
 	// 	},
 	// }
 
-	gameCharacter := domain.NewVtmGameCharacter(domain.VTM, map[string]interface{}{
+	gameCharacter := domain.NewVtmGameCharacter(uuid.New(), uuid.New(), domain.VTM, map[string]interface{}{
 		"name": "John Doe",
 		"dsiciplines": []map[string]interface{}{{
 			"name":  "Protean",

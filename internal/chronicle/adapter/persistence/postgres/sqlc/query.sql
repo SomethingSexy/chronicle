@@ -131,3 +131,25 @@ ON CONFLICT (game_id, character_id) DO UPDATE SET
   character_type = EXCLUDED.character_type,
   character = EXCLUDED.character,
   updated_at = EXCLUDED.updated_at;
+
+-- name: ListGameCharacters :many
+SELECT
+    c.character_id,
+    c.name AS character_name,
+    c.description,
+    gc.character_type,
+    gc.character AS game_specific_character_data,
+    g.type as game_type,
+    gc.game_character_id
+FROM
+    game g
+JOIN
+    world w ON g.world_id = w.id
+JOIN
+    world_character wc ON wc.world_id = w.id
+JOIN
+    character c ON wc.character_id = c.id
+LEFT JOIN
+    game_character gc ON gc.game_id = g.id AND gc.character_id = c.id
+WHERE
+    g.game_id = $1;

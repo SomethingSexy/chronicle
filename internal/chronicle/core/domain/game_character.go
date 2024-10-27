@@ -5,13 +5,14 @@ import "github.com/google/uuid"
 // TODO: How should we handle invalid types here?
 func NewGameCharacter(
 	gameType GameType,
+	id uuid.UUID,
 	characterId uuid.UUID,
 	characterType CharacterType,
 	character map[string]interface{},
 ) GameCharacter {
 	var gameCharacter GameCharacter
 	if gameType == VTM {
-		gameCharacter = NewVtmGameCharacter(characterType, character)
+		gameCharacter = NewVtmGameCharacter(id, characterId, characterType, character)
 	}
 
 	return gameCharacter
@@ -27,7 +28,9 @@ func NewGameCharacter(
 
 type GameCharacter interface {
 	Validator
-	Type() CharacterType
+	GetType() CharacterType
+	GetId() uuid.UUID
+	GetCharacterId() uuid.UUID
 }
 
 func NewCharacterType(t string) CharacterType {

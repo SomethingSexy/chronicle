@@ -32,9 +32,10 @@ func (t GameType) String() string {
 }
 
 type Game struct {
-	GameId  uuid.UUID
-	WorldId uuid.UUID
-	Name    string
-	Type    GameType
-	World   World
+	GameId     uuid.UUID
+	WorldId    uuid.UUID
+	Name       string
+	Type       GameType
+	World      World
+	Characters []GameCharacter
 }

@@ -29,13 +29,20 @@ func (h getGameHandler) Handle(ctx context.Context, q gamePort.GetGameQuery) (do
 		return domain.Game{}, err
 	}
 
-	characters, err := h.Persistence.World.ListCharacters(ctx, world.WorldId)
+	// TODO: In the future, probably makes more sense to combine world character fetch and
+	// game-character fetch into a single entity
+	worldCharacters, err := h.Persistence.World.ListCharacters(ctx, world.WorldId)
 	if err != nil {
 		return domain.Game{}, err
 	}
-	world.Characters = characters
-
+	world.Characters = worldCharacters
 	game.World = world
+
+	characters, err := h.Persistence.Game.ListCharacters(ctx, game.GameId)
+	if err != nil {
+		return domain.Game{}, err
+	}
+	game.Characters = characters
 
 	return game, nil
 }

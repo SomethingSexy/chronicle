@@ -122,7 +122,7 @@ func (g GameQuery) UpdateCharacter(ctx context.Context, gameId uuid.UUID, charac
 		return err
 	}
 
-	characterJsonB, err := json.Marshal(gameCharacter.Data())
+	characterJsonB, err := json.Marshal(gameCharacter.GetData())
 	if err != nil {
 		return err
 	}
@@ -138,9 +138,39 @@ func (g GameQuery) UpdateCharacter(ctx context.Context, gameId uuid.UUID, charac
 		GameCharacterID: uuid.New(),
 		GameID:          game.ID,
 		CharacterID:     character.ID,
-		CharacterType:   gameCharacter.Type().String(),
+		CharacterType:   gameCharacter.GetType().String(),
 		Character:       characterJsonB,
 		CreatedAt:       ts,
 		UpdatedAt:       ts,
 	})
+}
+
+func (g GameQuery) ListCharacters(ctx context.Context, gameId uuid.UUID) ([]domain.GameCharacter, error) {
+
+	results, err := g.Queries.ListGameCharacters(ctx, gameId)
+	if err != nil {
+		return nil, err
+	}
+
+	characters := make([]domain.GameCharacter, len(results))
+
+	for i, result := range results {
+		var character map[string]interface{}
+		err := json.Unmarshal(result.GameSpecificCharacterData, &character)
+		if err != nil {
+			return nil, err
+		}
+
+		characters[i] = domain.NewGameCharacter(
+			domain.NewGameType(result.GameType),
+			result.GameCharacterID,
+			result.CharacterID,
+			// Not exactly sure why this is a pgText and not string, might be
+			// because of the join?
+			domain.NewCharacterType(result.CharacterType.String),
+			character,
+		)
+	}
+
+	return characters, nil
 }

@@ -505,6 +505,67 @@ func (q *Queries) GetWorldLocations(ctx context.Context, worldID uuid.UUID) ([]G
 	return items, nil
 }
 
+const listGameCharacters = `-- name: ListGameCharacters :many
+SELECT
+    c.character_id,
+    c.name AS character_name,
+    c.description,
+    gc.character_type,
+    gc.character AS game_specific_character_data,
+    g.type as game_type,
+    gc.game_character_id
+FROM
+    game g
+JOIN
+    world w ON g.world_id = w.id
+JOIN
+    world_character wc ON wc.world_id = w.id
+JOIN
+    character c ON wc.character_id = c.id
+LEFT JOIN
+    game_character gc ON gc.game_id = g.id AND gc.character_id = c.id
+WHERE
+    g.game_id = $1
+`
+
+type ListGameCharactersRow struct {
+	CharacterID               uuid.UUID
+	CharacterName             string
+	Description               pgtype.Text
+	CharacterType             pgtype.Text
+	GameSpecificCharacterData []byte
+	GameType                  string
+	GameCharacterID           uuid.UUID
+}
+
+func (q *Queries) ListGameCharacters(ctx context.Context, gameID uuid.UUID) ([]ListGameCharactersRow, error) {
+	rows, err := q.db.Query(ctx, listGameCharacters, gameID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListGameCharactersRow
+	for rows.Next() {
+		var i ListGameCharactersRow
+		if err := rows.Scan(
+			&i.CharacterID,
+			&i.CharacterName,
+			&i.Description,
+			&i.CharacterType,
+			&i.GameSpecificCharacterData,
+			&i.GameType,
+			&i.GameCharacterID,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listGames = `-- name: ListGames :many
 SELECT id, game_id, world_id, name, type, created_at, updated_at FROM game
 ORDER BY name

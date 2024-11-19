@@ -1,20 +1,17 @@
 # Use the official Go image as the base image
-FROM golang:1.22 as builder
+FROM golang:1.22 AS builder
 
 # Set the working directory inside the container
 WORKDIR /app
 
-# Copy the Go module files (go.mod and go.sum)
-COPY go.mod go.sum ./
+# Copy chronicle code, include go.mod and go.sum
+COPY . .
 
 # Download and cache the dependencies
 # TODO: Manually adding internal common here, need to figure out the best way
 # to automatically install it via workspaces
 RUN go mod download
 RUN go get github.com/SomethingSexy/chronicle/internal/common
-
-# Copy the workspace code
-COPY . .
 
 # Build the Go application
 RUN go build -o chronicle .

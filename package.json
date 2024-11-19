@@ -1,10 +1,5 @@
 {
   "name": "chronicle",
   "version": "0.0.0",
-  "private": true,
-  "release": {
-    "branches": [
-      "master"
-    ]
-  }
+  "private": true
 }

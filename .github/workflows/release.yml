@@ -79,7 +79,11 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{env.VERSION}}
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          # For now just building
+          tags: |
+            type=raw,value=latest,enable={{is_default_branch}}
+          # type=semver,pattern=${{env.VERSION}}
       # Build and push Docker image with Buildx (don't push on PR)
       # https://github.com/docker/build-push-action
       - name: Build and push Docker image

@@ -14,13 +14,26 @@ RUN go mod download
 RUN go get github.com/SomethingSexy/chronicle/internal/common
 
 # Build the Go application
-RUN go build -o chronicle .
+RUN go build -o chronicle
 
 # Use a smaller base image for the final image
-FROM scratch
+# bookworm includes GLIBC
+FROM debian:bookworm-slim
 
-# Copy the built binary to the final image
-COPY --from=builder /app/chronicle /chronicle
+# Set up a non-root user (optional, but recommended for security)
+RUN useradd -m appuser
 
-# Set the entrypoint to execute the binary when the container starts
-ENTRYPOINT ["/chronicle"]
+# Set the working directory
+WORKDIR /app
+
+# Copy the binary from the builder stage
+COPY --from=builder /app/chronicle .
+
+# Change ownership of the binary (if using a non-root user)
+RUN chown appuser:appuser /app/chronicle
+
+# Switch to the non-root user
+USER appuser
+
+# Command to run the binary
+CMD ["./chronicle"]

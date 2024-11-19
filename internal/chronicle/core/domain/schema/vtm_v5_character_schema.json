@@ -534,7 +534,5 @@
       "description": "List of desires the character has."
     }
   },
-  "required": [
-    "clan"
-  ]
+  "required": []
 }

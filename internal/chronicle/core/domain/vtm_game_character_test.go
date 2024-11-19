@@ -8,11 +8,6 @@ import (
 )
 
 func TestGameCharacter_Validate_Valid(t *testing.T) {
-	// gameCharacter := domain.GameCharacter[domain.VtmGameCharacter]{
-	// 	Data: domain.VtmGameCharacter{
-	// 		Name: "John Doe",
-	// 	},
-	// }
 	gameCharacter := domain.NewVtmGameCharacter(uuid.New(), uuid.New(), domain.VTM, map[string]interface{}{
 		"name": "John Doe",
 	})
@@ -24,26 +19,11 @@ func TestGameCharacter_Validate_Valid(t *testing.T) {
 	}
 
 	if !valid {
-		t.Error("should be valid")
+		t.Error("Character should be valid")
 	}
 }
 
 func TestGameCharacter_Validate_Disciplines_Valid(t *testing.T) {
-	// gameCharacter := domain.GameCharacter[domain.VtmGameCharacter]{
-	// 	Data: domain.VtmGameCharacter{
-	// 		Name: "John Doe",
-	// 		Disciplines: []domain.Discipline{{
-	// 			Name:  "Protean",
-	// 			Level: 1,
-	// 			Powers: []domain.Power{{
-	// 				Name:        "Eyes of the Beast",
-	// 				Level:       1,
-	// 				Description: "See perfectly in total darkness with glowing red eyes.",
-	// 			}},
-	// 		}},
-	// 	},
-	// }
-
 	gameCharacter := domain.NewVtmGameCharacter(uuid.New(), uuid.New(), domain.VTM, map[string]interface{}{
 		"name": "John Doe",
 		"dsiciplines": []map[string]interface{}{{
@@ -64,6 +44,6 @@ func TestGameCharacter_Validate_Disciplines_Valid(t *testing.T) {
 	}
 
 	if !valid {
-		t.Error("should be valid")
+		t.Error("Character should be valid")
 	}
 }

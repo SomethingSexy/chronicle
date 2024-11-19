@@ -50,7 +50,7 @@ func NewGameCharacterResponse(gameCharacter domain.GameCharacter) GameCharacterR
 // the type of game.
 type GameCharacterRequest struct {
 	ID          string                 `jsonapi:"primary,game-characters"`
-	GameId      string                 `jsonapi:"attr,gameId"`
+	GameId      string                 `jsonapi:"attr,gameId,omitempty"`
 	CharacterId string                 `jsonapi:"attr,characterId"`
 	Character   map[string]interface{} `jsonapi:"attr,character"`
 	Type        string                 `jsonapi:"attr,type"`

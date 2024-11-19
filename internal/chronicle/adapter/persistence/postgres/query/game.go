@@ -122,6 +122,8 @@ func (g GameQuery) UpdateCharacter(ctx context.Context, gameId uuid.UUID, charac
 		return err
 	}
 
+	// TODO: We need to handle merging here, we will be supporting patch. 
+	// Remove as many arrays as possible. 
 	characterJsonB, err := json.Marshal(gameCharacter.GetData())
 	if err != nil {
 		return err

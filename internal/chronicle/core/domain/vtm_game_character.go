@@ -1,11 +1,13 @@
 package domain
 
 import (
-	"os"
-	"path"
+	_ "embed"
 
 	"github.com/google/uuid"
 )
+
+//go:embed schema/vtm_v5_character_schema.json
+var schema []byte
 
 func NewVtmGameCharacter(
 	id uuid.UUID,
@@ -39,7 +41,7 @@ func (g VtmGameCharacter) GetCharacterId() uuid.UUID {
 }
 
 func (g VtmGameCharacter) GetSchema() ([]byte, error) {
-	return os.ReadFile(path.Join("core", "domain", "schema", "vtm_v5_character_schema.json"))
+	return schema, nil
 }
 
 func (g VtmGameCharacter) GetData() map[string]interface{} {

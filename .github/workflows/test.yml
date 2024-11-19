@@ -26,6 +26,6 @@ jobs:
         with:
           go-version: "1.21.x"
       - name: Install dependencies
-        run: go get ./internal/chronicle
+        run: go work sync
       - name: Test with the Go CLI
         run: go test ./internal/chronicle/...

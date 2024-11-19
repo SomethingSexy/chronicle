@@ -19,7 +19,12 @@ import (
 
 func NewService() error {
 	// TODO: This shold probably come from the adapter instead
-	psqlConnStr := os.Getenv("DATABASE_URL")
+	psqlConnStr := os.Getenv("CHRONICLE_DATABASE_URL")
+	httpPort, httpPortFound := os.LookupEnv("CHRONICLE_HTTP_PORT")
+	if !httpPortFound {
+		httpPort = "3000"
+	}
+
 	db, err := pgxpool.New(context.Background(), psqlConnStr)
 	if err != nil {
 		return fmt.Errorf("Unable to connect to database: %v\n", err)
@@ -37,6 +42,9 @@ func NewService() error {
 
 	service := ChronicleService{
 		ChronicleApplication: app,
+		Config: ChronicleServiceConfig{
+			Port: httpPort,
+		},
 	}
 
 	httpServer := http.NewHttpServer(service)
@@ -46,6 +54,7 @@ func NewService() error {
 
 type ChronicleService struct {
 	ChronicleApplication port.ChronicleApplication
+	Config               ChronicleServiceConfig
 }
 
 func (c ChronicleService) Routes() map[string][]chi.Router {
@@ -64,4 +73,12 @@ func (c ChronicleService) Routes() map[string][]chi.Router {
 		"Characters": {characterRoutes},
 		"Worlds":     {worldRoutes},
 	}
+}
+
+func (c ChronicleService) Port() string {
+	return c.Config.Port
+}
+
+type ChronicleServiceConfig struct {
+	Port string
 }

@@ -2,7 +2,8 @@ package common
 
 import "github.com/go-chi/chi/v5"
 
-// This should represent an overall service application
-type Service interface {
+// Represents an overall rest http based service
+type RestService interface {
 	Routes() map[string][]chi.Router
+	Port() string
 }

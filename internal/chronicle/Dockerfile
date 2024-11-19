@@ -11,7 +11,7 @@ COPY . .
 # TODO: Manually adding internal common here, need to figure out the best way
 # to automatically install it via workspaces
 RUN go mod download
-RUN go get github.com/SomethingSexy/chronicle/internal/common
+RUN go get github.com/SomethingSexy/chronicle/internal/common@latest
 
 # Build the Go application
 RUN go build -o chronicle

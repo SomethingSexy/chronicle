@@ -1,4 +1,4 @@
-FROM qmcgaw/godevcontainer
+FROM qmcgaw/godevcontainer:alpine
 
 # Need curl to install atlas
 RUN apk --no-cache add curl

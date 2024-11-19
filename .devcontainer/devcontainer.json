@@ -30,7 +30,8 @@
                 "IBM.output-colorizer", // Colorize your output/test logs
                 "github.copilot", // AI code completion
                 "humao.rest-client", // http client similar to postman
-                "ckolkman.vscode-postgres"
+                "ckolkman.vscode-postgres",
+                "github.vscode-github-actions"
                 // "mohsen1.prettify-json", // Prettify JSON data
                 // "zxh404.vscode-proto3", // Supports Proto syntax
                 // "jrebocho.vscode-random", // Generates random values
